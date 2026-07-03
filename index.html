@@ -104,9 +104,11 @@ const APPS = [
   // ── 會考 · 考試 ──
   { name:"高中會考複習", desc:"會考歷屆真題分析，字彙／文法／閱讀重點題型，答完即時解析。", color:"#e84393", pill:"會考", group:"會考 · 考試", url:"https://fullmodel-star.github.io/cap-english/" },
   { name:"大學會考複習", desc:"學測歷屆真題複習，字彙／文法／閱讀重點與解析。", color:"#0ea5a5", pill:"大考", group:"會考 · 考試", url:"https://fullmodel-star.github.io/gsat-english/" },
+  // ── 旅遊 · 生活 ──
+  { name:"旅遊英文", desc:"全家出國會話：情境關卡、SOS 急救句、全句庫搜尋，出國隨查隨用。", color:"#4f46e5", pill:"旅遊", group:"旅遊 · 生活", url:"https://fullmodel-star.github.io/travel-english/" },
 ];
 // 分類顯示順序（新分類會自動接在後面）
-const GROUP_ORDER = ["單字","文法 · 句型","會考 · 考試"];
+const GROUP_ORDER = ["單字","文法 · 句型","會考 · 考試","旅遊 · 生活"];
 
 function lighten(hex,t){const c=[1,3,5].map(i=>parseInt(hex.substr(i,2),16));return"#"+c.map(v=>Math.round(v+(255-v)*t).toString(16).padStart(2,"0")).join("");}
 function card(a){
