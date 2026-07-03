@@ -30,6 +30,12 @@
   header .tags span{font-size:12px;font-weight:700;color:var(--muted);background:var(--card);border:1px solid var(--line);border-radius:20px;padding:6px 13px;box-shadow:var(--sh)}
   .intro{max-width:660px;margin:16px auto 0;text-align:center;color:var(--muted);font-size:13.8px;line-height:1.9;padding:0 4px}
   .intro b{color:var(--ink)}
+  #installBar{text-align:center;margin:16px auto 0}
+  #installBar:empty{display:none}
+  #installBar .ib{display:inline-flex;align-items:center;gap:8px;border:0;border-radius:14px;padding:12px 20px;font-size:14.5px;font-weight:800;cursor:pointer;background:linear-gradient(135deg,#4f6ef7,#7b8dff);color:#fff;box-shadow:0 8px 20px rgba(79,110,247,.3)}
+  #installBar .ib.sec{background:#eef2ff;color:#4f6ef7}
+  #installBar .tip{background:#fff7e6;border:1px solid #ffe0a3;border-radius:14px;padding:13px;font-size:13px;line-height:1.85;color:#5a4a1a;text-align:left;max-width:430px;margin:0 auto}
+  #installBar .tip .x{display:inline-block;margin-top:6px;color:#4f6ef7;font-weight:800;cursor:pointer}
   .search{display:flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:11px 14px;margin:18px 0 6px;box-shadow:var(--sh)}
   .search input{border:0;outline:0;background:none;flex:1;font-size:15px;color:var(--ink);font-family:inherit}
   .search input::placeholder{color:var(--muted)}
@@ -67,6 +73,8 @@
   </header>
 
   <p class="intro">「英語一點通」把 <b>國小到高中、大學</b> 的英語學習 App 集合在一個地方——<b>單字、文法、閱讀、句型、會考複習</b>，一站就能練。每個都<b>免費</b>、可<b>離線</b>使用，能加到手機或平板桌面當 App 開；學習進度只存在自己的裝置，<b>不上傳任何資料</b>。</p>
+
+  <div id="installBar"></div>
 
   <div class="search">🔍 <input id="q" type="search" placeholder="搜尋 App（例：單字、文法、會考…）" oninput="render()"></div>
 
@@ -122,6 +130,24 @@ function render(){
   document.getElementById("list").innerHTML = h || '<div class="empty">找不到符合的 App 🔍</div>';
 }
 render();
+
+/* ===== 安裝到桌面 (PWA) ===== */
+(function(){
+  var dp=null;
+  function iss(){return (window.matchMedia&&matchMedia("(display-mode: standalone)").matches)||navigator.standalone===true;}
+  function iios(){return /iphone|ipad|ipod/i.test(navigator.userAgent)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);}
+  function ren(){var el=document.getElementById("installBar");if(!el)return;
+    if(iss()){el.innerHTML="";return;}
+    if(dp){el.innerHTML='<button class="ib" onclick="__hubInstall()">📲 把「英語一點通」加到桌面 ➕</button>';}
+    else if(iios()){el.innerHTML='<button class="ib sec" onclick="__hubIOS()">📲 加到 iPad / iPhone 主畫面 ›</button>';}
+    else{el.innerHTML="";}}
+  window.addEventListener("beforeinstallprompt",function(e){e.preventDefault();dp=e;ren();});
+  window.addEventListener("appinstalled",function(){dp=null;ren();});
+  window.__hubInstall=function(){if(!dp)return;dp.prompt();dp.userChoice.finally(function(){dp=null;ren();});};
+  window.__hubIOS=function(){var el=document.getElementById("installBar");el.innerHTML='<div class="tip">📲 <b>加到 iPad / iPhone 桌面：</b><br>1. 用 <b>Safari</b> 開啟本頁<br>2. 點「分享 ⬆️」<br>3. 往下找「<b>加入主畫面 ➕</b>」<br>4. 右上按「新增」完成<br><span class="x" onclick="__hubClose()">知道了 ✓</span></div>';};
+  window.__hubClose=function(){ren();};
+  ren();
+})();
 if("serviceWorker" in navigator){navigator.serviceWorker.register("sw.js").catch(()=>{});}
 </script>
 </body>
