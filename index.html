@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#4f6ef7">
+<link rel="manifest" href="manifest.json">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="英語一點通">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<title>英語一點通</title>
+<style>
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  :root{--bg:#eef2fb;--card:#fff;--ink:#1e2a48;--muted:#6b7690;--line:#e6ebf7;
+        --sh:0 8px 24px rgba(40,64,140,.08),0 2px 6px rgba(40,64,140,.04)}
+  @media (prefers-color-scheme:dark){:root{--bg:#12162200;--bg:#0f1626;--card:#1a2236;--ink:#eaeefb;--muted:#95a0bd;--line:#26314d;--sh:0 8px 24px rgba(0,0,0,.35)}}
+  body{margin:0;font-family:"PingFang TC","Microsoft JhengHei",system-ui,sans-serif;background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased}
+  .wrap{max-width:960px;margin:0 auto;padding:24px 16px calc(40px + env(safe-area-inset-bottom))}
+  header{padding:22px 0 6px}
+  .banner{display:flex;align-items:center;justify-content:center;gap:16px}
+  .banner .logo{flex:0 0 auto;width:76px;height:76px;border-radius:22px;display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff;font-size:29px;letter-spacing:1px;background:linear-gradient(135deg,#4f6ef7,#e84393 55%,#f5a623);box-shadow:0 12px 26px rgba(232,67,147,.26)}
+  .banner .htxt{text-align:left}
+  .banner h1{font-size:32px;margin:0;font-weight:900;letter-spacing:2px;line-height:1.12;color:var(--ink)}
+  .banner h1 .dot{color:#e84393}
+  .banner .sub{margin:7px 0 0;color:var(--muted);font-size:13.5px;letter-spacing:.3px}
+  header .tags{display:flex;gap:7px;justify-content:center;flex-wrap:wrap;margin-top:16px}
+  header .tags span{font-size:12px;font-weight:700;color:var(--muted);background:var(--card);border:1px solid var(--line);border-radius:20px;padding:6px 13px;box-shadow:var(--sh)}
+  .intro{max-width:660px;margin:16px auto 0;text-align:center;color:var(--muted);font-size:13.8px;line-height:1.9;padding:0 4px}
+  .intro b{color:var(--ink)}
+  .search{display:flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:11px 14px;margin:18px 0 6px;box-shadow:var(--sh)}
+  .search input{border:0;outline:0;background:none;flex:1;font-size:15px;color:var(--ink);font-family:inherit}
+  .search input::placeholder{color:var(--muted)}
+  h2.grp{font-size:14px;font-weight:800;color:var(--muted);margin:24px 4px 10px;letter-spacing:.5px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px}
+  .card{position:relative;background:var(--card);border:1px solid var(--line);border-radius:20px;padding:16px;cursor:pointer;box-shadow:var(--sh);transition:transform .14s,box-shadow .14s;text-decoration:none;color:inherit;display:flex;flex-direction:column;align-items:center;text-align:center}
+  .card:active{transform:scale(.97)}
+  @media(hover:hover){.card:hover{transform:translateY(-3px)}}
+  .ic{width:66px;height:66px;border-radius:18px;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;margin-bottom:11px;box-shadow:0 6px 14px rgba(0,0,0,.14)}
+  .ic b{font-size:22px;font-weight:800;letter-spacing:.5px;line-height:1}
+  .ic .pill{margin-top:4px;background:#fff;border-radius:9px;font-size:11px;font-weight:800;padding:2px 9px;line-height:1.5}
+  .card .nm{font-weight:800;font-size:15px}
+  .card .ds{font-size:12px;color:var(--muted);margin-top:4px;line-height:1.5}
+  .card .go{margin-top:9px;font-size:12px;font-weight:800;color:var(--muted)}
+  .card.soon{opacity:.62}
+  .card.soon .go{color:#c98a00}
+  .badge-soon{position:absolute;top:10px;right:10px;background:#fff3cd;color:#8a6d1a;font-size:10px;font-weight:800;padding:2px 7px;border-radius:8px}
+  .empty{text-align:center;color:var(--muted);padding:30px;font-size:14px}
+  footer{text-align:center;color:var(--muted);font-size:12px;margin-top:28px;line-height:1.7}
+  footer .src{max-width:660px;margin:14px auto 0;font-size:11.5px;line-height:1.85;opacity:.92;border-top:1px solid var(--line);padding-top:12px}
+  footer .src b{font-weight:800}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="banner">
+      <div class="logo">ABC</div>
+      <div class="htxt">
+        <h1>英語一點<span class="dot">通</span></h1>
+        <p class="sub">單字・文法・會考，一站練會</p>
+      </div>
+    </div>
+    <div class="tags"><span>🆓 免費</span><span>📴 可離線</span><span>📲 加到桌面</span></div>
+  </header>
+
+  <p class="intro">「英語一點通」把 <b>國小到高中、大學</b> 的英語學習 App 集合在一個地方——<b>單字、文法、閱讀、句型、會考複習</b>，一站就能練。每個都<b>免費</b>、可<b>離線</b>使用，能加到手機或平板桌面當 App 開；學習進度只存在自己的裝置，<b>不上傳任何資料</b>。</p>
+
+  <div class="search">🔍 <input id="q" type="search" placeholder="搜尋 App（例：單字、文法、會考…）" oninput="render()"></div>
+
+  <div id="list"></div>
+
+  <footer>
+    共 <span id="count">0</span> 個 App · 點卡片開啟<br>
+    加入主畫面：手機瀏覽器選單 →「加到主畫面」
+    <div class="src">📚 <b>資料來源</b>：單字依<b>教育部課綱字表</b>；會考／考試題目取自<b>教育部心測中心（國中會考）、大學入學考試中心（學測・分科）</b>等公開歷屆試題；文法與閱讀為依課綱範圍編寫之原創題。皆為公開教育資源，僅供教學與自學參考。</div>
+  </footer>
+</div>
+
+<script>
+/* ========================================================================
+   要新增 App：在下面 APPS 陣列加一筆就好，版面會自動排（支援很多個）。
+   欄位： name 名稱 / desc 一句說明 / color 品牌色 / pill 圖示藥丸字 /
+          url 網址(null = 尚未上線，顯示「即將上線」) / group 分類
+   ======================================================================== */
+const APPS = [
+  // ── 單字 ──
+  { name:"國小1200", desc:"教育部課綱基礎 1200 字。翻卡＋間隔複習，打好國小英語底子。", color:"#2eb872", pill:"1200", group:"單字", url:"https://fullmodel-star.github.io/english1200/" },
+  { name:"國中2000", desc:"國中必備 2000 字，依主題分類、由易到難，會考單字一次備齊。", color:"#e8504f", pill:"2000", group:"單字", url:"https://fullmodel-star.github.io/english2000/" },
+  { name:"高中6000", desc:"高中進階 6000 字，銜接學測、指考的字彙量。", color:"#f5a623", pill:"6000", group:"單字", url:null },
+  // ── 文法 · 句型 ──
+  { name:"國中英語文法", desc:"20 大文法主題＋原創閱讀短文，658 文法題＋562 閱讀題，每題附詳解、錯題自動複習。", color:"#7b5bd6", pill:"文法", group:"文法 · 句型", url:"https://fullmodel-star.github.io/englishreading/" },
+  { name:"國中英語句型", desc:"多鄰國式拼句練習：把單字排成正確句子，邊玩邊練語感與句型。", color:"#1f8fd6", pill:"句型", group:"文法 · 句型", url:"https://fullmodel-star.github.io/englishS/" },
+  // ── 會考 · 考試 ──
+  { name:"高中會考複習", desc:"會考歷屆真題分析，字彙／文法／閱讀重點題型，答完即時解析。", color:"#e84393", pill:"會考", group:"會考 · 考試", url:"https://fullmodel-star.github.io/cap-english/" },
+  { name:"大學會考複習", desc:"學測歷屆真題複習，字彙／文法／閱讀重點與解析。", color:"#0ea5a5", pill:"大考", group:"會考 · 考試", url:"https://fullmodel-star.github.io/gsat-english/" },
+];
+// 分類顯示順序（新分類會自動接在後面）
+const GROUP_ORDER = ["單字","文法 · 句型","會考 · 考試"];
+
+function lighten(hex,t){const c=[1,3,5].map(i=>parseInt(hex.substr(i,2),16));return"#"+c.map(v=>Math.round(v+(255-v)*t).toString(16).padStart(2,"0")).join("");}
+function card(a){
+  const soon=!a.url;
+  const tag=`<div class="ic" style="background:linear-gradient(135deg,${a.color},${lighten(a.color,.22)})"><b>ABC</b><span class="pill" style="color:${a.color}">${a.pill}</span></div>`;
+  const inner=`${tag}<div class="nm">${a.name}</div><div class="ds">${a.desc}</div><div class="go">${soon?"即將上線":"開啟 ▶"}</div>${soon?'<span class="badge-soon">即將上線</span>':''}`;
+  if(soon)return `<div class="card soon" title="尚未上線">${inner}</div>`;
+  return `<a class="card" href="${a.url}" target="_blank" rel="noopener">${inner}</a>`;
+}
+function render(){
+  const q=(document.getElementById("q").value||"").trim().toLowerCase();
+  const list=APPS.filter(a=>!q||(a.name+a.desc+a.group).toLowerCase().includes(q));
+  document.getElementById("count").textContent=APPS.length;
+  const groups=[...new Set(list.map(a=>a.group))].sort((x,y)=>{
+    let ix=GROUP_ORDER.indexOf(x),iy=GROUP_ORDER.indexOf(y);
+    if(ix<0)ix=99;if(iy<0)iy=99;return ix-iy;});
+  let h="";
+  groups.forEach(g=>{
+    h+=`<h2 class="grp">${g}</h2><div class="grid">`+list.filter(a=>a.group===g).map(card).join("")+`</div>`;
+  });
+  document.getElementById("list").innerHTML = h || '<div class="empty">找不到符合的 App 🔍</div>';
+}
+render();
+if("serviceWorker" in navigator){navigator.serviceWorker.register("sw.js").catch(()=>{});}
+</script>
+</body>
+</html>
