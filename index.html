@@ -170,6 +170,10 @@ const VOCAB_APPS=[
   {k:"engpomo_v1_toeic", name:"多益單字", url:"https://fullmodel-star.github.io/toeic-vocab/", color:"#1e40af"},
   {k:"engpomo_v1_toefl", name:"托福單字", url:"https://fullmodel-star.github.io/toefl-vocab/", color:"#14532d"},
 ];
+const QBANK_APPS=[
+  {k:"cap_qb_v1",  name:"會考英語題庫", url:"https://fullmodel-star.github.io/cap-qbank/",  color:"#4338ca"},
+  {k:"gsat_qb_v1", name:"學測英語題庫", url:"https://fullmodel-star.github.io/gsat-qbank/", color:"#0e7490"},
+];
 function renderDash(){
   const el=document.getElementById("dash");if(!el)return;const now=Date.now();
   let allWords=[],examWrong=0,units=0,exPer=[],any=false;
@@ -188,9 +192,17 @@ function renderDash(){
     if(learned)any=true;
     vLearned+=learned;vDue+=due;vPer.push({...a,learned,due});
   });
+  let qDone=0,qWrong=0,qPer=[];
+  QBANK_APPS.forEach(a=>{
+    const S=readJSON(a.k)||{}, rec=S.rec||{}, wr=(S.wrong||[]);
+    const done=Object.keys(rec).length, corr=Object.values(rec).filter(x=>x&&x.correct).length, nwr=wr.length;
+    if(done||nwr)any=true;
+    qDone+=done;qWrong+=nwr;qPer.push({...a,done,corr,nwr});
+  });
   if(!any){el.innerHTML='<h3>📊 我的學習儀表板</h3><div class="demp">開始用各 App 學習後，這裡會自動彙整你的<b>已學單字、待複習與完成進度</b>。<br>（資料只存在本裝置，不上傳）</div>';return;}
   const uniq=[...new Set(allWords.map(x=>x.w))];
-  const totalReview=examWrong+vDue;
+  const totalReview=examWrong+vDue+qWrong;
+  const qcards=qPer.filter(a=>a.done||a.nwr).map(a=>`<a class="dapp" href="${a.url}" target="_blank" rel="noopener"><span style="width:10px;height:10px;border-radius:50%;flex:0 0 auto;background:${a.color}"></span><div><div class="dnm">${a.name}</div><div class="dmeta">作答 ${a.done} 題・答對率 ${a.done?Math.round(a.corr/a.done*100):0}%${a.nwr?"・<b style='color:#d9822b'>錯題 "+a.nwr+"</b>":""}</div></div><span class="dgo">開啟 ▶</span></a>`).join("");
   const vcards=vPer.filter(a=>a.learned).map(a=>`<a class="dapp" href="${a.url}" target="_blank" rel="noopener"><span style="width:10px;height:10px;border-radius:50%;flex:0 0 auto;background:${a.color}"></span><div><div class="dnm">${a.name}</div><div class="dmeta">已學 ${a.learned} 字${a.due?"・<b style='color:#d9822b'>待複習 "+a.due+"</b>":"・已複習完 ✓"}</div></div><span class="dgo">開啟 ▶</span></a>`).join("");
   const ecards=exPer.filter(a=>a.nw||a.nwr||a.nu).map(a=>`<a class="dapp" href="${a.url}" target="_blank" rel="noopener"><span style="width:10px;height:10px;border-radius:50%;flex:0 0 auto;background:${a.color}"></span><div><div class="dnm">${a.name}</div><div class="dmeta">生字 ${a.nw}・錯題 ${a.nwr}・完成 ${a.nu} 單元</div></div><span class="dgo">開啟 ▶</span></a>`).join("");
   const chips=allWords.slice().sort((x,y)=>x.w.localeCompare(y.w)).map(x=>`<span class="wchip" title="${x.app}">${x.w}</span>`).join("");
@@ -201,7 +213,8 @@ function renderDash(){
       <div class="dstat"><b>${units}</b><span>✅ 完成單元</span></div>
     </div>
     ${vcards?`<div style="font-size:12px;font-weight:800;color:var(--muted);margin:14px 2px 6px">📚 單字複習</div><div class="dapps">${vcards}</div>`:""}
-    ${ecards?`<div style="font-size:12px;font-weight:800;color:var(--muted);margin:14px 2px 6px">📝 會考・學測</div><div class="dapps">${ecards}</div>`:""}
+    ${qcards?`<div style="font-size:12px;font-weight:800;color:var(--muted);margin:14px 2px 6px">📝 官方題庫（整卷模擬）</div><div class="dapps">${qcards}</div>`:""}
+    ${ecards?`<div style="font-size:12px;font-weight:800;color:var(--muted);margin:14px 2px 6px">📚 會考・學測（講義）</div><div class="dapps">${ecards}</div>`:""}
     ${allWords.length?`<details class="dwords"><summary>📒 我的考試生字本（${uniq.length}）</summary><div style="margin-top:8px">${chips}</div></details>`:""}`;
 }
 renderDash();
