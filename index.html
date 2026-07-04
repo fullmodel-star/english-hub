@@ -151,32 +151,48 @@ render();
 
 /* ===== 學習儀表板（跨 App 彙整，同網域 localStorage 互通）===== */
 function readJSON(k){try{return JSON.parse(localStorage.getItem(k))||null}catch(e){return null}}
-const DASH_APPS=[
+const EXAM_APPS=[
   {p:"cap",  name:"國中會考複習", url:"https://fullmodel-star.github.io/cap-english/",  color:"#e84393"},
   {p:"gsat", name:"學測複習",     url:"https://fullmodel-star.github.io/gsat-english/", color:"#0ea5a5"},
 ];
+const VOCAB_APPS=[
+  {k:"engpomo_v1_1200", name:"國小1200", url:"https://fullmodel-star.github.io/english1200/", color:"#2eb872"},
+  {k:"engpomo_v1_2000", name:"國中2000", url:"https://fullmodel-star.github.io/english2000/", color:"#e8504f"},
+  {k:"engpomo_v1_6000", name:"高中6000", url:"https://fullmodel-star.github.io/english6000/", color:"#f5a623"},
+];
 function renderDash(){
-  const el=document.getElementById("dash");if(!el)return;
-  let allWords=[],totalWrong=0,totalUnits=0,per=[],any=false;
-  DASH_APPS.forEach(a=>{
+  const el=document.getElementById("dash");if(!el)return;const now=Date.now();
+  let allWords=[],examWrong=0,units=0,exPer=[],any=false;
+  EXAM_APPS.forEach(a=>{
     const w=readJSON(a.p+"_words")||{}, wr=readJSON(a.p+"_wrong")||{}, un=readJSON(a.p+"_units")||{};
     const nw=Object.keys(w).length,nwr=Object.keys(wr).length,nu=Object.keys(un).length;
     if(nw||nwr||nu)any=true;
     Object.keys(w).forEach(k=>allWords.push({w:k,app:a.name}));
-    totalWrong+=nwr;totalUnits+=nu;per.push({...a,nw,nwr,nu});
+    examWrong+=nwr;units+=nu;exPer.push({...a,nw,nwr,nu});
   });
-  if(!any){el.innerHTML='<h3>📊 我的學習儀表板</h3><div class="demp">在<b>國中會考複習</b>、<b>學測複習</b>裡練習後，這裡會自動彙整你的<b>生字、待複習錯題與完成進度</b>。<br>（資料只存在本裝置，不上傳）</div>';return;}
+  let vLearned=0,vDue=0,vPer=[];
+  VOCAB_APPS.forEach(a=>{
+    const S=readJSON(a.k)||{}, srs=S.srs||{};
+    const learned=Object.keys(srs).length;
+    const due=Object.keys(srs).reduce((n,k)=>{const e=srs[k];return n+((e&&e.due&&e.due<=now)?1:0);},0);
+    if(learned)any=true;
+    vLearned+=learned;vDue+=due;vPer.push({...a,learned,due});
+  });
+  if(!any){el.innerHTML='<h3>📊 我的學習儀表板</h3><div class="demp">開始用各 App 學習後，這裡會自動彙整你的<b>已學單字、待複習與完成進度</b>。<br>（資料只存在本裝置，不上傳）</div>';return;}
   const uniq=[...new Set(allWords.map(x=>x.w))];
-  const apps=per.filter(a=>a.nw||a.nwr||a.nu).map(a=>`<a class="dapp" href="${a.url}" target="_blank" rel="noopener"><span style="width:10px;height:10px;border-radius:50%;flex:0 0 auto;background:${a.color}"></span><div><div class="dnm">${a.name}</div><div class="dmeta">生字 ${a.nw}・錯題 ${a.nwr}・完成 ${a.nu} 單元</div></div><span class="dgo">開啟 ▶</span></a>`).join("");
+  const totalReview=examWrong+vDue;
+  const vcards=vPer.filter(a=>a.learned).map(a=>`<a class="dapp" href="${a.url}" target="_blank" rel="noopener"><span style="width:10px;height:10px;border-radius:50%;flex:0 0 auto;background:${a.color}"></span><div><div class="dnm">${a.name}</div><div class="dmeta">已學 ${a.learned} 字${a.due?"・<b style='color:#d9822b'>待複習 "+a.due+"</b>":"・已複習完 ✓"}</div></div><span class="dgo">開啟 ▶</span></a>`).join("");
+  const ecards=exPer.filter(a=>a.nw||a.nwr||a.nu).map(a=>`<a class="dapp" href="${a.url}" target="_blank" rel="noopener"><span style="width:10px;height:10px;border-radius:50%;flex:0 0 auto;background:${a.color}"></span><div><div class="dnm">${a.name}</div><div class="dmeta">生字 ${a.nw}・錯題 ${a.nwr}・完成 ${a.nu} 單元</div></div><span class="dgo">開啟 ▶</span></a>`).join("");
   const chips=allWords.slice().sort((x,y)=>x.w.localeCompare(y.w)).map(x=>`<span class="wchip" title="${x.app}">${x.w}</span>`).join("");
   el.innerHTML=`<h3>📊 我的學習儀表板</h3>
     <div class="dstats">
-      <div class="dstat"><b>${uniq.length}</b><span>⭐ 生字</span></div>
-      <div class="dstat"><b>${totalWrong}</b><span>❌ 待複習錯題</span></div>
-      <div class="dstat"><b>${totalUnits}</b><span>✅ 完成單元</span></div>
+      <div class="dstat"><b>${vLearned}</b><span>📖 已學單字</span></div>
+      <div class="dstat"><b style="${totalReview?'color:#d9822b':''}">${totalReview}</b><span>🔁 今日待複習</span></div>
+      <div class="dstat"><b>${units}</b><span>✅ 完成單元</span></div>
     </div>
-    <div class="dapps">${apps}</div>
-    ${allWords.length?`<details class="dwords"><summary>📒 我的生字本（${uniq.length}）</summary><div style="margin-top:8px">${chips}</div></details>`:""}`;
+    ${vcards?`<div style="font-size:12px;font-weight:800;color:var(--muted);margin:14px 2px 6px">📚 單字複習</div><div class="dapps">${vcards}</div>`:""}
+    ${ecards?`<div style="font-size:12px;font-weight:800;color:var(--muted);margin:14px 2px 6px">📝 會考・學測</div><div class="dapps">${ecards}</div>`:""}
+    ${allWords.length?`<details class="dwords"><summary>📒 我的考試生字本（${uniq.length}）</summary><div style="margin-top:8px">${chips}</div></details>`:""}`;
 }
 renderDash();
 
