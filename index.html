@@ -14,7 +14,7 @@
 <title>英語一點通</title>
 <style>
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-  :root{--bg:#eef2fb;--card:#fff;--ink:#1e2a48;--muted:#6b7690;--line:#e6ebf7;
+  :root{--bg:#eef2fb;--card:#fff;--ink:#1e2a48;--muted:#59627a;--line:#e6ebf7;
         --sh:0 8px 24px rgba(40,64,140,.08),0 2px 6px rgba(40,64,140,.04)}
   @media (prefers-color-scheme:dark){:root{--bg:#12162200;--bg:#0f1626;--card:#1a2236;--ink:#eaeefb;--muted:#95a0bd;--line:#26314d;--sh:0 8px 24px rgba(0,0,0,.35)}}
   body{margin:0;font-family:"PingFang TC","Microsoft JhengHei",system-ui,sans-serif;background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased}
@@ -99,7 +99,7 @@
   <footer>
     共 <span id="count">0</span> 個 App · 點卡片開啟<br>
     加入主畫面：手機瀏覽器選單 →「加到主畫面」
-    <div class="src">📚 <b>資料來源</b>：單字依<b>教育部課綱字表</b>；會考／考試題目取自<b>教育部心測中心（國中會考）、大學入學考試中心（學測・分科）</b>等公開歷屆試題；文法與閱讀為依課綱範圍編寫之原創題。皆為公開教育資源，僅供教學與自學參考。</div>
+    <div class="src">📚 <b>資料來源</b>：單字：國中小依<b>教育部課綱字表</b>、高中依大考中心參考詞彙，多益／托福為國際測驗常見字彙（非官方字表）；會考／考試題目取自<b>教育部心測中心（國中會考）、大學入學考試中心（學測・分科）</b>等公開歷屆試題；文法與閱讀為依課綱範圍編寫之原創題。皆為公開教育資源，僅供教學與自學參考。</div>
   </footer>
 </div>
 
@@ -120,10 +120,10 @@ const APPS = [
   { name:"國中英語文法", desc:"20 大文法主題＋原創閱讀短文，658 文法題＋562 閱讀題，每題附詳解、錯題自動複習。", color:"#7b5bd6", pill:"文法", group:"文法 · 句型", url:"https://fullmodel-star.github.io/englishreading/" },
   { name:"國中英語句型", desc:"多鄰國式拼句練習：把單字排成正確句子，邊玩邊練語感與句型。", color:"#1f8fd6", pill:"句型", group:"文法 · 句型", url:"https://fullmodel-star.github.io/englishS/" },
   // ── 會考 · 考試 ──
-  { name:"國中會考複習", desc:"會考歷屆真題分析，字彙／文法／閱讀重點題型，答完即時解析。", color:"#e84393", pill:"會考", group:"會考 · 考試", url:"https://fullmodel-star.github.io/cap-english/" },
-  { name:"學測複習", desc:"學測歷屆真題複習，字彙／文法／閱讀重點與解析。", color:"#0ea5a5", pill:"大考", group:"會考 · 考試", url:"https://fullmodel-star.github.io/gsat-english/" },
-  { name:"會考英語題庫", desc:"官方歷屆 110–115：整卷模擬考（計時）＋題型專練＋弱點診斷＋錯題本，含聽力官方音檔。226 閱讀題起跳。", color:"#4338ca", pill:"題庫", group:"會考 · 考試", url:"https://fullmodel-star.github.io/cap-qbank/" },
-  { name:"學測英語題庫", desc:"大考中心官方歷屆 110–115：281 題五大題型（詞彙／綜合／文意選填／篇章結構／閱讀），整卷模擬考（計時）＋弱點診斷＋錯題本。", color:"#0e7490", pill:"學測", group:"會考 · 考試", url:"https://fullmodel-star.github.io/gsat-qbank/" },
+  { name:"國中會考複習", desc:"【講義複習】會考歷屆真題分析，字彙／文法／閱讀重點題型，答完即時解析。", color:"#e84393", pill:"會考", group:"會考 · 考試", url:"https://fullmodel-star.github.io/cap-english/" },
+  { name:"學測複習", desc:"【講義複習】學測歷屆真題複習，字彙／文法／閱讀重點與解析。", color:"#0ea5a5", pill:"學測", group:"會考 · 考試", url:"https://fullmodel-star.github.io/gsat-english/" },
+  { name:"會考英語題庫", desc:"【整卷題庫】官方歷屆 110–115：整卷模擬考（計時）＋題型專練＋弱點診斷＋錯題本，含聽力官方音檔。226 閱讀題起跳。", color:"#4338ca", pill:"題庫", group:"會考 · 考試", url:"https://fullmodel-star.github.io/cap-qbank/" },
+  { name:"學測英語題庫", desc:"【整卷題庫】大考中心官方歷屆 110–115：281 題五大題型（詞彙／綜合／文意選填／篇章結構／閱讀），整卷模擬考（計時）＋弱點診斷＋錯題本。", color:"#0e7490", pill:"學測", group:"會考 · 考試", url:"https://fullmodel-star.github.io/gsat-qbank/" },
   // ── 旅遊 · 生活 ──
   { name:"旅遊英文", desc:"全家出國會話：情境關卡、SOS 急救句、全句庫搜尋，出國隨查隨用。", color:"#4f46e5", pill:"旅遊", group:"旅遊 · 生活", url:"https://fullmodel-star.github.io/travel-english/" },
   { name:"家庭生活英語", desc:"在家的一天：起床、吃飯、家事、睡前、生病…10 大情境對話＋角色扮演，全家用英語生活。", color:"#e76f51", pill:"家庭", group:"旅遊 · 生活", url:"https://fullmodel-star.github.io/family-english/" },
