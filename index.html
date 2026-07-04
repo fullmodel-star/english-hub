@@ -114,8 +114,8 @@ const APPS = [
   { name:"國小1200", desc:"教育部課綱基礎 1200 字。翻卡＋間隔複習，打好國小英語底子。", color:"#2eb872", pill:"1200", group:"單字", url:"https://fullmodel-star.github.io/english1200/" },
   { name:"國中2000", desc:"國中必備 2000 字，依主題分類、由易到難，會考單字一次備齊。", color:"#e8504f", pill:"2000", group:"單字", url:"https://fullmodel-star.github.io/english2000/" },
   { name:"高中6000", desc:"高中進階 6000 字，銜接學測、指考的字彙量。", color:"#f5a623", pill:"6000", group:"單字", url:"https://fullmodel-star.github.io/english6000/" },
-  { name:"多益單字", desc:"成人職場商用字彙，874 字分 18 單元；含詞性、音標、例句、翻卡＋間隔複習，簡潔專業。", color:"#1e3a5f", pill:"多益", group:"單字", url:"https://fullmodel-star.github.io/toeic-vocab/" },
-  { name:"托福單字", desc:"留學學術字彙，896 字分 18 單元；含詞性、音標、例句、翻卡＋間隔複習，簡潔專業。", color:"#0f5c5c", pill:"托福", group:"單字", url:"https://fullmodel-star.github.io/toefl-vocab/" },
+  { name:"多益單字", desc:"成人職場商用字彙，874 字分 18 單元；含詞性、音標、例句、翻卡＋間隔複習，簡潔專業。", color:"#1e3a5f", pill:"多益", group:"檢定 · 職場", url:"https://fullmodel-star.github.io/toeic-vocab/" },
+  { name:"托福單字", desc:"留學學術字彙，896 字分 18 單元；含詞性、音標、例句、翻卡＋間隔複習，簡潔專業。", color:"#0f5c5c", pill:"托福", group:"檢定 · 職場", url:"https://fullmodel-star.github.io/toefl-vocab/" },
   // ── 文法 · 句型 ──
   { name:"國中英語文法", desc:"20 大文法主題＋原創閱讀短文，658 文法題＋562 閱讀題，每題附詳解、錯題自動複習。", color:"#7b5bd6", pill:"文法", group:"文法 · 句型", url:"https://fullmodel-star.github.io/englishreading/" },
   { name:"國中英語句型", desc:"多鄰國式拼句練習：把單字排成正確句子，邊玩邊練語感與句型。", color:"#1f8fd6", pill:"句型", group:"文法 · 句型", url:"https://fullmodel-star.github.io/englishS/" },
@@ -132,7 +132,7 @@ const APPS = [
   { name:"社交英文", desc:"打招呼／邀約／道歉／安慰／告白…13 大社交情感情境，自然開口。", color:"#db2777", pill:"社交", group:"旅遊 · 生活", url:"https://fullmodel-star.github.io/social-english/" },
 ];
 // 分類顯示順序（新分類會自動接在後面）
-const GROUP_ORDER = ["單字","文法 · 句型","會考 · 考試","旅遊 · 生活"];
+const GROUP_ORDER = ["單字","檢定 · 職場","文法 · 句型","會考 · 考試","旅遊 · 生活"];
 
 function lighten(hex,t){const c=[1,3,5].map(i=>parseInt(hex.substr(i,2),16));return"#"+c.map(v=>Math.round(v+(255-v)*t).toString(16).padStart(2,"0")).join("");}
 function card(a){
@@ -174,6 +174,13 @@ const QBANK_APPS=[
   {k:"cap_qb_v1",  name:"會考英語題庫", url:"https://fullmodel-star.github.io/cap-qbank/",  color:"#4338ca"},
   {k:"gsat_qb_v1", name:"學測英語題庫", url:"https://fullmodel-star.github.io/gsat-qbank/", color:"#0e7490"},
 ];
+const CONV_APPS=[
+  {k:"trip_en_global",   name:"旅遊英文",     url:"https://fullmodel-star.github.io/travel-english/", color:"#0ea5e9"},
+  {k:"family_en_global", name:"家庭生活英語", url:"https://fullmodel-star.github.io/family-english/", color:"#e76f51"},
+  {k:"campus_en_global", name:"校園生活英語", url:"https://fullmodel-star.github.io/campus-english/", color:"#65a30d"},
+  {k:"life_en_global",   name:"生活辦事英文", url:"https://fullmodel-star.github.io/errand-english/", color:"#ea580c"},
+  {k:"social_en_global", name:"社交英文",     url:"https://fullmodel-star.github.io/social-english/", color:"#db2777"},
+];
 function renderDash(){
   const el=document.getElementById("dash");if(!el)return;const now=Date.now();
   let allWords=[],examWrong=0,units=0,exPer=[],any=false;
@@ -199,12 +206,20 @@ function renderDash(){
     if(done||nwr)any=true;
     qDone+=done;qWrong+=nwr;qPer.push({...a,done,corr,nwr});
   });
+  let cPer=[];
+  CONV_APPS.forEach(a=>{
+    const S=readJSON(a.k)||{}, cards=S.cards||{};
+    const practiced=Object.keys(cards).length;
+    if(practiced)any=true;
+    cPer.push({...a,practiced});
+  });
   if(!any){el.innerHTML='<h3>📊 我的學習儀表板</h3><div class="demp">開始用各 App 學習後，這裡會自動彙整你的<b>已學單字、待複習與完成進度</b>。<br>（資料只存在本裝置，不上傳）</div>';return;}
   const uniq=[...new Set(allWords.map(x=>x.w))];
   const totalReview=examWrong+vDue+qWrong;
   const qcards=qPer.filter(a=>a.done||a.nwr).map(a=>`<a class="dapp" href="${a.url}" target="_blank" rel="noopener"><span style="width:10px;height:10px;border-radius:50%;flex:0 0 auto;background:${a.color}"></span><div><div class="dnm">${a.name}</div><div class="dmeta">作答 ${a.done} 題・答對率 ${a.done?Math.round(a.corr/a.done*100):0}%${a.nwr?"・<b style='color:#d9822b'>錯題 "+a.nwr+"</b>":""}</div></div><span class="dgo">開啟 ▶</span></a>`).join("");
   const vcards=vPer.filter(a=>a.learned).map(a=>`<a class="dapp" href="${a.url}" target="_blank" rel="noopener"><span style="width:10px;height:10px;border-radius:50%;flex:0 0 auto;background:${a.color}"></span><div><div class="dnm">${a.name}</div><div class="dmeta">已學 ${a.learned} 字${a.due?"・<b style='color:#d9822b'>待複習 "+a.due+"</b>":"・已複習完 ✓"}</div></div><span class="dgo">開啟 ▶</span></a>`).join("");
   const ecards=exPer.filter(a=>a.nw||a.nwr||a.nu).map(a=>`<a class="dapp" href="${a.url}" target="_blank" rel="noopener"><span style="width:10px;height:10px;border-radius:50%;flex:0 0 auto;background:${a.color}"></span><div><div class="dnm">${a.name}</div><div class="dmeta">生字 ${a.nw}・錯題 ${a.nwr}・完成 ${a.nu} 單元</div></div><span class="dgo">開啟 ▶</span></a>`).join("");
+  const ccards=cPer.filter(a=>a.practiced).map(a=>`<a class="dapp" href="${a.url}" target="_blank" rel="noopener"><span style="width:10px;height:10px;border-radius:50%;flex:0 0 auto;background:${a.color}"></span><div><div class="dnm">${a.name}</div><div class="dmeta">已練 ${a.practiced} 句</div></div><span class="dgo">開啟 ▶</span></a>`).join("");
   const chips=allWords.slice().sort((x,y)=>x.w.localeCompare(y.w)).map(x=>`<span class="wchip" title="${x.app}">${x.w}</span>`).join("");
   el.innerHTML=`<h3>📊 我的學習儀表板</h3>
     <div class="dstats">
@@ -215,6 +230,7 @@ function renderDash(){
     ${vcards?`<div style="font-size:12px;font-weight:800;color:var(--muted);margin:14px 2px 6px">📚 單字複習</div><div class="dapps">${vcards}</div>`:""}
     ${qcards?`<div style="font-size:12px;font-weight:800;color:var(--muted);margin:14px 2px 6px">📝 官方題庫（整卷模擬）</div><div class="dapps">${qcards}</div>`:""}
     ${ecards?`<div style="font-size:12px;font-weight:800;color:var(--muted);margin:14px 2px 6px">📚 會考・學測（講義）</div><div class="dapps">${ecards}</div>`:""}
+    ${ccards?`<div style="font-size:12px;font-weight:800;color:var(--muted);margin:14px 2px 6px">🗣️ 生活會話</div><div class="dapps">${ccards}</div>`:""}
     ${allWords.length?`<details class="dwords"><summary>📒 我的考試生字本（${uniq.length}）</summary><div style="margin-top:8px">${chips}</div></details>`:""}`;
 }
 renderDash();
