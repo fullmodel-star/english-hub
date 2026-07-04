@@ -57,6 +57,20 @@
   footer{text-align:center;color:var(--muted);font-size:12px;margin-top:28px;line-height:1.7}
   footer .src{max-width:660px;margin:14px auto 0;font-size:11.5px;line-height:1.85;opacity:.92;border-top:1px solid var(--line);padding-top:12px}
   footer .src b{font-weight:800}
+  .dash{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:16px;margin:18px 0 6px;box-shadow:var(--sh)}
+  .dash h3{margin:0 0 12px;font-size:15px;display:flex;align-items:center;gap:8px}
+  .dstats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+  .dstat{text-align:center;background:var(--bg);border-radius:14px;padding:12px 6px}
+  .dstat b{display:block;font-size:26px;font-weight:900;color:var(--ink);line-height:1.1}
+  .dstat span{font-size:11.5px;color:var(--muted)}
+  .dapps{display:grid;gap:9px;margin-top:12px}
+  .dapp{display:flex;align-items:center;gap:10px;background:var(--bg);border-radius:12px;padding:10px 12px;text-decoration:none;color:inherit}
+  .dapp .dnm{font-weight:800;font-size:14px}.dapp .dmeta{font-size:11.5px;color:var(--muted)}
+  .dapp .dgo{margin-left:auto;font-size:12px;color:var(--muted);font-weight:800}
+  .dwords{margin-top:12px}
+  .dwords summary{cursor:pointer;font-weight:700;font-size:13.5px;color:var(--muted)}
+  .wchip{display:inline-block;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:3px 9px;margin:3px 3px 0 0;font-size:13px}
+  .dash .demp{color:var(--muted);font-size:13px;text-align:center;padding:10px 6px;line-height:1.8}
 </style>
 </head>
 <body>
@@ -75,6 +89,8 @@
   <p class="intro">「英語一點通」把 <b>國小到高中、大學</b> 的英語學習 App 集合在一個地方——<b>單字、文法、閱讀、句型、會考複習</b>，一站就能練。每個都<b>免費</b>、可<b>離線</b>使用，能加到手機或平板桌面當 App 開；學習進度只存在自己的裝置，<b>不上傳任何資料</b>。</p>
 
   <div id="installBar"></div>
+
+  <div class="dash" id="dash"></div>
 
   <div class="search">🔍 <input id="q" type="search" placeholder="搜尋 App（例：單字、文法、會考…）" oninput="render()"></div>
 
@@ -102,8 +118,8 @@ const APPS = [
   { name:"國中英語文法", desc:"20 大文法主題＋原創閱讀短文，658 文法題＋562 閱讀題，每題附詳解、錯題自動複習。", color:"#7b5bd6", pill:"文法", group:"文法 · 句型", url:"https://fullmodel-star.github.io/englishreading/" },
   { name:"國中英語句型", desc:"多鄰國式拼句練習：把單字排成正確句子，邊玩邊練語感與句型。", color:"#1f8fd6", pill:"句型", group:"文法 · 句型", url:"https://fullmodel-star.github.io/englishS/" },
   // ── 會考 · 考試 ──
-  { name:"高中會考複習", desc:"會考歷屆真題分析，字彙／文法／閱讀重點題型，答完即時解析。", color:"#e84393", pill:"會考", group:"會考 · 考試", url:"https://fullmodel-star.github.io/cap-english/" },
-  { name:"大學會考複習", desc:"學測歷屆真題複習，字彙／文法／閱讀重點與解析。", color:"#0ea5a5", pill:"大考", group:"會考 · 考試", url:"https://fullmodel-star.github.io/gsat-english/" },
+  { name:"國中會考複習", desc:"會考歷屆真題分析，字彙／文法／閱讀重點題型，答完即時解析。", color:"#e84393", pill:"會考", group:"會考 · 考試", url:"https://fullmodel-star.github.io/cap-english/" },
+  { name:"學測複習", desc:"學測歷屆真題複習，字彙／文法／閱讀重點與解析。", color:"#0ea5a5", pill:"大考", group:"會考 · 考試", url:"https://fullmodel-star.github.io/gsat-english/" },
   // ── 旅遊 · 生活 ──
   { name:"旅遊英文", desc:"全家出國會話：情境關卡、SOS 急救句、全句庫搜尋，出國隨查隨用。", color:"#4f46e5", pill:"旅遊", group:"旅遊 · 生活", url:"https://fullmodel-star.github.io/travel-english/" },
 ];
@@ -132,6 +148,37 @@ function render(){
   document.getElementById("list").innerHTML = h || '<div class="empty">找不到符合的 App 🔍</div>';
 }
 render();
+
+/* ===== 學習儀表板（跨 App 彙整，同網域 localStorage 互通）===== */
+function readJSON(k){try{return JSON.parse(localStorage.getItem(k))||null}catch(e){return null}}
+const DASH_APPS=[
+  {p:"cap",  name:"國中會考複習", url:"https://fullmodel-star.github.io/cap-english/",  color:"#e84393"},
+  {p:"gsat", name:"學測複習",     url:"https://fullmodel-star.github.io/gsat-english/", color:"#0ea5a5"},
+];
+function renderDash(){
+  const el=document.getElementById("dash");if(!el)return;
+  let allWords=[],totalWrong=0,totalUnits=0,per=[],any=false;
+  DASH_APPS.forEach(a=>{
+    const w=readJSON(a.p+"_words")||{}, wr=readJSON(a.p+"_wrong")||{}, un=readJSON(a.p+"_units")||{};
+    const nw=Object.keys(w).length,nwr=Object.keys(wr).length,nu=Object.keys(un).length;
+    if(nw||nwr||nu)any=true;
+    Object.keys(w).forEach(k=>allWords.push({w:k,app:a.name}));
+    totalWrong+=nwr;totalUnits+=nu;per.push({...a,nw,nwr,nu});
+  });
+  if(!any){el.innerHTML='<h3>📊 我的學習儀表板</h3><div class="demp">在<b>國中會考複習</b>、<b>學測複習</b>裡練習後，這裡會自動彙整你的<b>生字、待複習錯題與完成進度</b>。<br>（資料只存在本裝置，不上傳）</div>';return;}
+  const uniq=[...new Set(allWords.map(x=>x.w))];
+  const apps=per.filter(a=>a.nw||a.nwr||a.nu).map(a=>`<a class="dapp" href="${a.url}" target="_blank" rel="noopener"><span style="width:10px;height:10px;border-radius:50%;flex:0 0 auto;background:${a.color}"></span><div><div class="dnm">${a.name}</div><div class="dmeta">生字 ${a.nw}・錯題 ${a.nwr}・完成 ${a.nu} 單元</div></div><span class="dgo">開啟 ▶</span></a>`).join("");
+  const chips=allWords.slice().sort((x,y)=>x.w.localeCompare(y.w)).map(x=>`<span class="wchip" title="${x.app}">${x.w}</span>`).join("");
+  el.innerHTML=`<h3>📊 我的學習儀表板</h3>
+    <div class="dstats">
+      <div class="dstat"><b>${uniq.length}</b><span>⭐ 生字</span></div>
+      <div class="dstat"><b>${totalWrong}</b><span>❌ 待複習錯題</span></div>
+      <div class="dstat"><b>${totalUnits}</b><span>✅ 完成單元</span></div>
+    </div>
+    <div class="dapps">${apps}</div>
+    ${allWords.length?`<details class="dwords"><summary>📒 我的生字本（${uniq.length}）</summary><div style="margin-top:8px">${chips}</div></details>`:""}`;
+}
+renderDash();
 
 /* ===== 安裝到桌面 (PWA) ===== */
 (function(){
