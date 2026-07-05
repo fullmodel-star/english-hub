@@ -142,7 +142,7 @@ function card(a){
   const tag=`<div class="ic" style="background:linear-gradient(135deg,${a.color},${lighten(a.color,.22)})"><b>ABC</b><span class="pill" style="color:${a.color}">${a.pill}</span></div>`;
   const inner=`${tag}<div class="nm">${a.name}</div><div class="ds">${a.desc}</div><div class="go">${soon?"即將上線":"開啟 ▶"}</div>${soon?'<span class="badge-soon">即將上線</span>':''}`;
   if(soon)return `<div class="card soon" title="尚未上線">${inner}</div>`;
-  return `<a class="card" href="${a.url}" target="_blank" rel="noopener">${inner}</a>`;
+  return `<a class="card" href="${a.url}">${inner}</a>`;
 }
 function render(){
   const q=(document.getElementById("q").value||"").trim().toLowerCase();
@@ -218,10 +218,10 @@ function renderDash(){
   if(!any){el.innerHTML='<h3>📊 我的學習儀表板</h3><div class="demp">開始用各 App 學習後，這裡會自動彙整你的<b>已學單字、待複習與完成進度</b>。<br>（資料只存在本裝置，不上傳）</div>';return;}
   const uniq=[...new Set(allWords.map(x=>x.w))];
   const totalReview=examWrong+vDue+qWrong;
-  const qcards=qPer.filter(a=>a.done||a.nwr).map(a=>`<a class="dapp" href="${a.url}" target="_blank" rel="noopener"><span style="width:10px;height:10px;border-radius:50%;flex:0 0 auto;background:${a.color}"></span><div><div class="dnm">${a.name}</div><div class="dmeta">作答 ${a.done} 題・答對率 ${a.done?Math.round(a.corr/a.done*100):0}%${a.nwr?"・<b style='color:#d9822b'>錯題 "+a.nwr+"</b>":""}</div></div><span class="dgo">開啟 ▶</span></a>`).join("");
-  const vcards=vPer.filter(a=>a.learned).map(a=>`<a class="dapp" href="${a.url}" target="_blank" rel="noopener"><span style="width:10px;height:10px;border-radius:50%;flex:0 0 auto;background:${a.color}"></span><div><div class="dnm">${a.name}</div><div class="dmeta">已學 ${a.learned} 字${a.due?"・<b style='color:#d9822b'>待複習 "+a.due+"</b>":"・已複習完 ✓"}</div></div><span class="dgo">開啟 ▶</span></a>`).join("");
-  const ecards=exPer.filter(a=>a.nw||a.nwr||a.nu).map(a=>`<a class="dapp" href="${a.url}" target="_blank" rel="noopener"><span style="width:10px;height:10px;border-radius:50%;flex:0 0 auto;background:${a.color}"></span><div><div class="dnm">${a.name}</div><div class="dmeta">生字 ${a.nw}・錯題 ${a.nwr}・完成 ${a.nu} 單元</div></div><span class="dgo">開啟 ▶</span></a>`).join("");
-  const ccards=cPer.filter(a=>a.practiced).map(a=>`<a class="dapp" href="${a.url}" target="_blank" rel="noopener"><span style="width:10px;height:10px;border-radius:50%;flex:0 0 auto;background:${a.color}"></span><div><div class="dnm">${a.name}</div><div class="dmeta">已練 ${a.practiced} 句</div></div><span class="dgo">開啟 ▶</span></a>`).join("");
+  const qcards=qPer.filter(a=>a.done||a.nwr).map(a=>`<a class="dapp" href="${a.url}"><span style="width:10px;height:10px;border-radius:50%;flex:0 0 auto;background:${a.color}"></span><div><div class="dnm">${a.name}</div><div class="dmeta">作答 ${a.done} 題・答對率 ${a.done?Math.round(a.corr/a.done*100):0}%${a.nwr?"・<b style='color:#d9822b'>錯題 "+a.nwr+"</b>":""}</div></div><span class="dgo">開啟 ▶</span></a>`).join("");
+  const vcards=vPer.filter(a=>a.learned).map(a=>`<a class="dapp" href="${a.url}"><span style="width:10px;height:10px;border-radius:50%;flex:0 0 auto;background:${a.color}"></span><div><div class="dnm">${a.name}</div><div class="dmeta">已學 ${a.learned} 字${a.due?"・<b style='color:#d9822b'>待複習 "+a.due+"</b>":"・已複習完 ✓"}</div></div><span class="dgo">開啟 ▶</span></a>`).join("");
+  const ecards=exPer.filter(a=>a.nw||a.nwr||a.nu).map(a=>`<a class="dapp" href="${a.url}"><span style="width:10px;height:10px;border-radius:50%;flex:0 0 auto;background:${a.color}"></span><div><div class="dnm">${a.name}</div><div class="dmeta">生字 ${a.nw}・錯題 ${a.nwr}・完成 ${a.nu} 單元</div></div><span class="dgo">開啟 ▶</span></a>`).join("");
+  const ccards=cPer.filter(a=>a.practiced).map(a=>`<a class="dapp" href="${a.url}"><span style="width:10px;height:10px;border-radius:50%;flex:0 0 auto;background:${a.color}"></span><div><div class="dnm">${a.name}</div><div class="dmeta">已練 ${a.practiced} 句</div></div><span class="dgo">開啟 ▶</span></a>`).join("");
   const chips=allWords.slice().sort((x,y)=>x.w.localeCompare(y.w)).map(x=>`<span class="wchip" title="${x.app}">${x.w}</span>`).join("");
   el.innerHTML=`<h3>📊 我的學習儀表板</h3>
     <div class="dstats">
@@ -269,13 +269,15 @@ var css='.engwc-ov{position:fixed;inset:0;background:rgba(28,28,40,.55);-webkit-
 +'.engwc-i{font-size:21px;flex:0 0 auto;line-height:1.3}'
 +'.engwc-step b{font-size:14.5px}.engwc-step>div>div{font-size:12.5px;color:#7a7a86;line-height:1.5;margin-top:1px}'
 +'.engwc-start{width:100%;border:0;border-radius:14px;padding:13px;font-size:15.5px;font-weight:800;color:#fff;background:'+CFG.theme+';cursor:pointer;margin-top:8px;font-family:inherit}'
-+'.engwc-help{position:fixed;left:calc(12px + env(safe-area-inset-left));bottom:calc(76px + env(safe-area-inset-bottom));z-index:2147482000;width:40px;height:40px;border-radius:50%;border:1px solid #e2e2ea;background:rgba(255,255,255,.94);color:#666;font-size:18px;cursor:pointer;box-shadow:0 3px 12px rgba(0,0,0,.18);padding:0}';
++'.engwc-help{position:fixed;left:calc(12px + env(safe-area-inset-left));bottom:calc(76px + env(safe-area-inset-bottom));z-index:2147482000;width:40px;height:40px;border-radius:50%;border:1px solid #e2e2ea;background:rgba(255,255,255,.94);color:#666;font-size:18px;cursor:pointer;box-shadow:0 3px 12px rgba(0,0,0,.18);padding:0}'
++'.engwc-home{position:fixed;left:calc(60px + env(safe-area-inset-left));bottom:calc(76px + env(safe-area-inset-bottom));z-index:2147482000;height:40px;border-radius:20px;border:1px solid #e2e2ea;background:rgba(255,255,255,.94);color:#555;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 3px 12px rgba(0,0,0,.18);padding:0 13px}';
 var st=document.createElement('style');st.textContent=css;document.head.appendChild(st);
 var steps=CFG.steps.map(function(s){return '<div class=\"engwc-step\"><span class=\"engwc-i\">'+s[0]+'</span><div><b>'+s[1]+'</b><div>'+s[2]+'</div></div></div>';}).join('');
 var ov=document.createElement('div');ov.className='engwc-ov';
 ov.innerHTML='<div class=\"engwc-card\"><div class=\"engwc-emoji\">'+CFG.emoji+'</div><div class=\"engwc-h\">歡迎使用 '+CFG.title+'</div><div class=\"engwc-sub\">'+CFG.tagline+'</div>'+steps+'<button class=\"engwc-start\">開始使用 ▶</button></div>';
 document.body.appendChild(ov);
 var hb=document.createElement('button');hb.className='engwc-help';hb.setAttribute('aria-label','使用說明');hb.textContent='❓';document.body.appendChild(hb);
+if(CFG.ns!=='english-hub'){var hm=document.createElement('button');hm.className='engwc-home';hm.setAttribute('aria-label','回英語一點通入口');hm.innerHTML='⬅ 入口';hm.addEventListener('click',function(){location.href='https://fullmodel-star.github.io/english-hub/';});document.body.appendChild(hm);}
 function show(){ov.classList.add('show');}function close(){ov.classList.remove('show');try{localStorage.setItem(K,'1');}catch(e){}}
 ov.querySelector('.engwc-start').addEventListener('click',close);
 ov.addEventListener('click',function(e){if(e.target===ov)close();});
