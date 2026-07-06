@@ -257,7 +257,18 @@ renderDash();
   window.__hubClose=function(){ren();};
   ren();
 })();
-if("serviceWorker" in navigator){navigator.serviceWorker.register("sw.js").catch(()=>{});}
+if("serviceWorker" in navigator){
+  var __hadCtrl=!!navigator.serviceWorker.controller, __reloading=false;
+  navigator.serviceWorker.addEventListener("controllerchange",function(){
+    if(!__hadCtrl){__hadCtrl=true;return;}           /* 首次安裝不重載 */
+    if(__reloading)return; __reloading=true;
+    location.reload();                                /* 偵測到新版→自動更新 */
+  });
+  navigator.serviceWorker.register("sw.js").then(function(reg){
+    if(reg.update)reg.update();                       /* 每次開啟主動檢查更新 */
+    setInterval(function(){try{reg.update()}catch(e){}},60*60*1000);
+  }).catch(()=>{});
+}
 </script>
 <script>/*ENGREVIEW*/(function(){if(window.EngReview)return;
 var WK='engreview.wrong',VK='engreview.words',APP={"id": "english-hub", "name": "英語學習入口"};
