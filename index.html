@@ -111,25 +111,24 @@
    ======================================================================== */
 const APPS = [
   // ── 學習規劃 ──
-  { name:"學習計畫日曆", desc:"國中三年學習計畫：月曆＋每日任務、補習／自習排程、各科章節進度、每日英語必修，任務完成升忍者等級。", color:"#ff6a1a", pill:"計畫", group:"學習規劃", url:"https://fullmodel-star.github.io/study-planner/" },
+  { name:"學習計畫日曆", desc:"國中三年學習計畫：月曆＋每日任務、補習自習排程，完成升忍者等級。", color:"#ff6a1a", pill:"計畫", group:"學習規劃", url:"https://fullmodel-star.github.io/study-planner/" },
   // ── 單字 ──
   { name:"國小1200", desc:"教育部課綱基礎 1200 字。翻卡＋間隔複習，打好國小英語底子。", color:"#2eb872", pill:"1200", group:"單字", url:"https://fullmodel-star.github.io/english1200/" },
   { name:"國中2000", desc:"國中必備 2000 字，依主題分類、由易到難，會考單字一次備齊。", color:"#e8504f", pill:"2000", group:"單字", url:"https://fullmodel-star.github.io/english2000/" },
   { name:"高中6000", desc:"高中進階 6000 字，銜接學測、指考的字彙量。", color:"#f5a623", pill:"6000", group:"單字", url:"https://fullmodel-star.github.io/english6000/" },
-  { name:"學測必考單字", desc:"大考中心 110-115 實際考出的 2570 字，按歷屆頻率分級（超高頻→出現過），翻卡＋測驗＋間隔複習＋發音。背最會考的字。", color:"#d97706", pill:"必考", group:"單字", url:"https://fullmodel-star.github.io/gsat-core/" },
-  { name:"多益單字", desc:"成人職場商用字彙，874 字分 18 單元；含詞性、音標、例句、翻卡＋間隔複習，簡潔專業。", color:"#1e3a5f", pill:"多益", group:"檢定 · 職場", url:"https://fullmodel-star.github.io/toeic-vocab/" },
-  { name:"托福單字", desc:"留學學術字彙，896 字分 18 單元；含詞性、音標、例句、翻卡＋間隔複習，簡潔專業。", color:"#0f5c5c", pill:"托福", group:"檢定 · 職場", url:"https://fullmodel-star.github.io/toefl-vocab/" },
+  { name:"學測必考單字", desc:"大考中心 110-115 實考 2570 字，按頻率分級，翻卡＋測驗＋發音。", color:"#d97706", pill:"必考", group:"單字", url:"https://fullmodel-star.github.io/gsat-core/" },
+  { name:"多益單字", desc:"職場商用 874 字，含詞性／音標／例句，翻卡＋間隔複習。", color:"#1e3a5f", pill:"多益", group:"檢定 · 職場", url:"https://fullmodel-star.github.io/toeic-vocab/" },
+  { name:"托福單字", desc:"留學學術 896 字，含詞性／音標／例句，翻卡＋間隔複習。", color:"#0f5c5c", pill:"托福", group:"檢定 · 職場", url:"https://fullmodel-star.github.io/toefl-vocab/" },
   // ── 文法 · 句型 ──
-  { name:"國中英語文法", desc:"20 大文法主題＋原創閱讀短文，658 文法題＋562 閱讀題，每題附詳解、錯題自動複習。", color:"#7b5bd6", pill:"文法", group:"文法 · 句型", url:"https://fullmodel-star.github.io/englishreading/" },
   { name:"國中英語句型", desc:"多鄰國式拼句練習：把單字排成正確句子，邊玩邊練語感與句型。", color:"#1f8fd6", pill:"句型", group:"文法 · 句型", url:"https://fullmodel-star.github.io/englishS/" },
   { name:"高中英語文法", desc:"學測進階文法 18 主題（時態／假設語氣／倒裝／分詞構句／子句…），每主題講義＋637 原創題＋48 學測風格閱讀＋高中 6000 單字，錯題自動複習。", color:"#4338ca", pill:"高中文法", group:"文法 · 句型", url:"https://fullmodel-star.github.io/hs-grammar/" },
   { name:"英語片語", desc:"會考～學測高頻片語 8 大類 291 個：片語卡翻卡＋克漏字測驗，每個附中文、例句與間隔複習。", color:"#0d9488", pill:"片語", group:"文法 · 句型", url:"https://fullmodel-star.github.io/english-phrases/" },
   // ── 會考 · 考試 ──
-  { name:"國中會考複習", desc:"【講義複習】會考歷屆真題分析，字彙／文法／閱讀重點題型，答完即時解析。", color:"#e84393", pill:"會考", group:"會考 · 考試", url:"https://fullmodel-star.github.io/cap-english/" },
-  { name:"學測複習", desc:"【講義複習】學測歷屆真題複習，字彙／文法／閱讀重點與解析。", color:"#0ea5a5", pill:"學測", group:"會考 · 考試", url:"https://fullmodel-star.github.io/gsat-english/" },
-  { name:"會考英語題庫", desc:"【整卷題庫】官方歷屆 110–115：整卷模擬考（計時）＋題型專練＋弱點診斷＋錯題本，含聽力官方音檔。226 閱讀題起跳。", color:"#4338ca", pill:"題庫", group:"會考 · 考試", url:"https://fullmodel-star.github.io/cap-qbank/" },
-  { name:"學測英語題庫", desc:"【整卷題庫】大考中心官方歷屆 110–115：281 題五大題型（詞彙／綜合／文意選填／篇章結構／閱讀），整卷模擬考（計時）＋弱點診斷＋錯題本。", color:"#0e7490", pill:"學測", group:"會考 · 考試", url:"https://fullmodel-star.github.io/gsat-qbank/" },
-  { name:"國中英文題庫（內部）", desc:"【內部·需密碼】國中文法＋閱讀共 1790 題：文法特快車／精熟句型、ASK素養／情境／整合／輕素養／克漏字／長文，依書系分單元＋觀念講義＋錯題本。資料已加密，須輸入通行密碼。", color:"#4338ca", pill:"🔒國中", group:"會考 · 考試", url:"https://fullmodel-star.github.io/junior_english/" },
+  { name:"國中會考複習", desc:"會考歷屆真題重點：字彙／文法／閱讀，即時解析。", color:"#e84393", pill:"會考", group:"會考 · 考試", url:"https://fullmodel-star.github.io/cap-english/" },
+  { name:"學測複習", desc:"學測歷屆真題重點：字彙／文法／閱讀＋解析。", color:"#0ea5a5", pill:"學測", group:"會考 · 考試", url:"https://fullmodel-star.github.io/gsat-english/" },
+  { name:"會考英語題庫", desc:"官方 110–115 整卷模擬（計時）＋弱點診斷＋錯題本，含聽力。", color:"#4338ca", pill:"題庫", group:"會考 · 考試", url:"https://fullmodel-star.github.io/cap-qbank/" },
+  { name:"學測英語題庫", desc:"大考中心 110–115 五大題型 281 題，計時模擬＋弱點診斷。", color:"#0e7490", pill:"學測", group:"會考 · 考試", url:"https://fullmodel-star.github.io/gsat-qbank/" },
+  { name:"國中英文題庫（內部）", desc:"國中文法＋閱讀 1790 題，附詳解、模擬卷、錯題本。需密碼。", color:"#7b5bd6", pill:"🔒國中", group:"會考 · 考試", url:"https://fullmodel-star.github.io/junior_english/" },
   // ── 旅遊 · 生活 ──
   { name:"旅遊英文", desc:"全家出國會話：情境關卡、SOS 急救句、全句庫搜尋，出國隨查隨用。", color:"#4f46e5", pill:"旅遊", group:"旅遊 · 生活", url:"https://fullmodel-star.github.io/travel-english/" },
   { name:"家庭生活英語", desc:"在家的一天：起床、吃飯、家事、睡前、生病…10 大情境對話＋角色扮演，全家用英語生活。", color:"#e76f51", pill:"家庭", group:"旅遊 · 生活", url:"https://fullmodel-star.github.io/family-english/" },
@@ -313,7 +312,7 @@ try{if(!localStorage.getItem(K))setTimeout(show,500);}catch(e){setTimeout(show,5
 <script>/*REVIEWUI*/(function(){if(window.__rvc)return;window.__rvc=1;
 var R=window.EngReview;if(!R){return;}
 var MYID=R.app.id, ISHUB=(MYID==='english-hub');
-var NSMAP={"english1200": {"name": "國小1200單字", "url": "https://fullmodel-star.github.io/english1200/"}, "english2000": {"name": "國中2000單字", "url": "https://fullmodel-star.github.io/english2000/"}, "english6000": {"name": "高中6000單字", "url": "https://fullmodel-star.github.io/english6000/"}, "gsat-core": {"name": "學測必考單字", "url": "https://fullmodel-star.github.io/gsat-core/"}, "toeic-vocab": {"name": "多益單字", "url": "https://fullmodel-star.github.io/toeic-vocab/"}, "toefl-vocab": {"name": "托福單字", "url": "https://fullmodel-star.github.io/toefl-vocab/"}, "englishS": {"name": "國中英語句型", "url": "https://fullmodel-star.github.io/englishS/"}, "eng17": {"name": "國中英語文法", "url": "https://fullmodel-star.github.io/englishreading/"}, "enghs": {"name": "高中英語文法", "url": "https://fullmodel-star.github.io/hs-grammar/"}, "english-phrases": {"name": "英語片語", "url": "https://fullmodel-star.github.io/english-phrases/"}, "cap-english": {"name": "國中會考複習", "url": "https://fullmodel-star.github.io/cap-english/"}, "gsat-english": {"name": "學測複習", "url": "https://fullmodel-star.github.io/gsat-english/"}, "cap-qbank": {"name": "會考英語題庫", "url": "https://fullmodel-star.github.io/cap-qbank/"}, "gsat-qbank": {"name": "學測英語題庫", "url": "https://fullmodel-star.github.io/gsat-qbank/"}, "travel-english": {"name": "旅遊英文", "url": "https://fullmodel-star.github.io/travel-english/"}, "family-english": {"name": "家庭生活英語", "url": "https://fullmodel-star.github.io/family-english/"}, "campus-english": {"name": "校園生活英語", "url": "https://fullmodel-star.github.io/campus-english/"}, "errand-english": {"name": "生活辦事英文", "url": "https://fullmodel-star.github.io/errand-english/"}, "social-english": {"name": "社交英文", "url": "https://fullmodel-star.github.io/social-english/"}};
+var NSMAP={"english1200": {"name": "國小1200單字", "url": "https://fullmodel-star.github.io/english1200/"}, "english2000": {"name": "國中2000單字", "url": "https://fullmodel-star.github.io/english2000/"}, "english6000": {"name": "高中6000單字", "url": "https://fullmodel-star.github.io/english6000/"}, "gsat-core": {"name": "學測必考單字", "url": "https://fullmodel-star.github.io/gsat-core/"}, "toeic-vocab": {"name": "多益單字", "url": "https://fullmodel-star.github.io/toeic-vocab/"}, "toefl-vocab": {"name": "托福單字", "url": "https://fullmodel-star.github.io/toefl-vocab/"}, "englishS": {"name": "國中英語句型", "url": "https://fullmodel-star.github.io/englishS/"}, "enghs": {"name": "高中英語文法", "url": "https://fullmodel-star.github.io/hs-grammar/"}, "english-phrases": {"name": "英語片語", "url": "https://fullmodel-star.github.io/english-phrases/"}, "cap-english": {"name": "國中會考複習", "url": "https://fullmodel-star.github.io/cap-english/"}, "gsat-english": {"name": "學測複習", "url": "https://fullmodel-star.github.io/gsat-english/"}, "cap-qbank": {"name": "會考英語題庫", "url": "https://fullmodel-star.github.io/cap-qbank/"}, "gsat-qbank": {"name": "學測英語題庫", "url": "https://fullmodel-star.github.io/gsat-qbank/"}, "travel-english": {"name": "旅遊英文", "url": "https://fullmodel-star.github.io/travel-english/"}, "family-english": {"name": "家庭生活英語", "url": "https://fullmodel-star.github.io/family-english/"}, "campus-english": {"name": "校園生活英語", "url": "https://fullmodel-star.github.io/campus-english/"}, "errand-english": {"name": "生活辦事英文", "url": "https://fullmodel-star.github.io/errand-english/"}, "social-english": {"name": "社交英文", "url": "https://fullmodel-star.github.io/social-english/"}};
 function esc(s){return (s==null?'':String(s)).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 function speak(t){try{var u=new SpeechSynthesisUtterance(t);u.lang='en-US';u.rate=.9;speechSynthesis.cancel();speechSynthesis.speak(u);}catch(e){}}
 var L=['A','B','C','D','E','F'],NOW=Date.now();
