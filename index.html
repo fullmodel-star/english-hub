@@ -219,31 +219,6 @@ function renderDash(){
     if(practiced)any=true;
     cPer.push({...a,practiced});
   });
-  // 學習計畫日曆（同網域讀取，今日完成度＋忍者等級）
-  let planTile='';
-  {
-    const P=readJSON('study_planner_v1');
-    if(P&&P.subjects){
-      any=true;
-      const pad=n=>String(n).padStart(2,'0'), dt=new Date();
-      const key=dt.getFullYear()+'-'+pad(dt.getMonth()+1)+'-'+pad(dt.getDate()), dow=dt.getDay();
-      const ck=(P.checks&&P.checks[key])||{};
-      const engReq=!!(P.eng&&P.eng.apps&&Object.values(P.eng.apps).some(Boolean));
-      let tot=0,dn=0;
-      (P.routine||[]).forEach(r=>{ if(!(r.days||[]).includes(dow)||r.type==='eng')return; tot++; if(ck['r_'+r.id])dn++; });
-      (((P.events||{})[key])||[]).forEach(e=>{ if(e.type==='eng')return; tot++; if(ck['e_'+e.id])dn++; });
-      if(engReq){ tot++; if(ck['eng_'+key])dn++; }
-      let cd=0,ct=0; (P.subjects||[]).forEach(s=>(s.chaps||[]).forEach(c=>{ct++;if(c.done)cd++;}));
-      const opct=ct?Math.round(cd/ct*100):0;
-      const rank=opct>=100?'🔥火影':opct>=85?'🌟傳說之忍':opct>=65?'⚡精英上忍':opct>=45?'⚔️上忍':opct>=25?'🗡️中忍':opct>=10?'🥷下忍':'🍃學院學生';
-      const todayTxt = tot?`今日 ${dn}/${tot} 完成${dn===tot?' 🎉':''}`:'今天尚未排任務';
-      planTile=`<div style="font-size:12px;font-weight:800;color:var(--muted);margin:6px 2px 6px">📅 學習計畫</div>
-        <div class="dapps"><a class="dapp" href="https://fullmodel-star.github.io/study-planner/">
-          <span style="width:10px;height:10px;border-radius:50%;flex:0 0 auto;background:#ff6a1a"></span>
-          <div><div class="dnm">學習計畫日曆</div><div class="dmeta">${todayTxt}・忍者等級 ${rank}（進度 ${opct}%）</div></div>
-          <span class="dgo">開啟 ▶</span></a></div>`;
-    }
-  }
   if(!any){el.innerHTML='<h3>📊 我的學習儀表板</h3><div class="demp">開始用各 App 學習後，這裡會自動彙整你的<b>已學單字、待複習與完成進度</b>。<br>（資料只存在本裝置，不上傳）</div>';return;}
   const uniq=[...new Set(allWords.map(x=>x.w))];
   const totalReview=examWrong+vDue+qWrong;
@@ -253,7 +228,6 @@ function renderDash(){
   const ccards=cPer.filter(a=>a.practiced).map(a=>`<a class="dapp" href="${a.url}"><span style="width:10px;height:10px;border-radius:50%;flex:0 0 auto;background:${a.color}"></span><div><div class="dnm">${a.name}</div><div class="dmeta">已練 ${a.practiced} 句</div></div><span class="dgo">開啟 ▶</span></a>`).join("");
   const chips=allWords.slice().sort((x,y)=>x.w.localeCompare(y.w)).map(x=>`<span class="wchip" title="${x.app}">${x.w}</span>`).join("");
   el.innerHTML=`<h3>📊 我的學習儀表板</h3>
-    ${planTile}
     <div class="dstats">
       <div class="dstat"><b>${vLearned}</b><span>📖 已學單字</span></div>
       <div class="dstat"><b style="${totalReview?'color:#d9822b':''}">${totalReview}</b><span>🔁 今日待複習</span></div>
