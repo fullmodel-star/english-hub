@@ -51,7 +51,7 @@ var APPS=[
  {slug:'cap-qbank',label:'會考英語題庫',id:'cap-qbank',type:'qbank',key:'cap_qb_v1'},
  {slug:'gsat-qbank',label:'學測英語題庫',id:'gsat-qbank',type:'qbank',key:'gsat_qb_v1'},
  {slug:'hs-grammar',label:'高中英語文法',id:'hs-grammar',type:'profile',ns:'enghs'},
- {slug:'english-phrases',label:'英語片語',id:'phrases',type:'profile',ns:'engph',overcome:true},
+ {slug:'english-phrases',label:'英語片語',id:'phrases',type:'profile',ns:'engph',overcome:true,total:291},
  {slug:'junior1b',label:'國一下複習',id:'junior1b',type:'junior1b'}
 ];
 
@@ -120,10 +120,12 @@ function extract(cfg){
     var srs=d.srs||{},log=d.log||[],wn=(d.wrong||[]).length;
     var mastered=Object.keys(srs).filter(function(k){return srs[k]&&srs[k].interval>=3}).length;
     if(!mastered&&!log.length&&!wn) return null;
-    var ok=log.filter(function(x){return x&&x.correct}).length;
-    var m=[{k:'精熟',v:mastered},{k:'待清錯題',v:wn},{k:'作答',v:log.length}];
+    var pct, plabel, lead;
+    var m=[];
+    if(cfg.total){ var learned=Object.keys(srs).length; pct=Math.round(learned/cfg.total*100); plabel='已學過'; m=[{k:'已學過',v:learned+'/'+cfg.total},{k:'精熟',v:mastered},{k:'待清錯題',v:wn},{k:'作答',v:log.length}]; }
+    else{ var ok=log.filter(function(x){return x&&x.correct}).length; pct=log.length?Math.round(ok/log.length*100):null; plabel='作答正確率'; m=[{k:'作答',v:log.length},{k:'精熟',v:mastered},{k:'待清錯題',v:wn}]; }
     if(cfg.overcome) m.push({k:'已征服',v:d.overcome||0});
-    return {pct:log.length?Math.round(ok/log.length*100):null,pctLabel:'作答正確率',streak:logStreak(log),metrics:m};
+    return {pct:pct,pctLabel:plabel,streak:logStreak(log),metrics:m};
   }
   if(cfg.type==='junior1b'){
     var S=J('kh1b_v2'); if(!S) return null;
