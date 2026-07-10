@@ -56,6 +56,8 @@ var APPS=[
 ];
 
 function J(k){ try{ var v=localStorage.getItem(k); return v?JSON.parse(v):null; }catch(e){ return null; } }
+// 優先用 App 回報時存下的真實總數(eng_total_<id>)，沒有才用寫死的 fallback → 內容數量變動也不會失準
+function totalOf(cfg){ var t=+localStorage.getItem('eng_total_'+cfg.id); return (t&&t>0)?t:(cfg.total||0); }
 function ninjaXp(){ var n=J('ninja_xp_v1'); return (n&&n.xp)||0; }
 function logStreak(log){
   if(!log||!log.length) return 0;
@@ -79,8 +81,9 @@ function extract(cfg){
     var xp=st.xp||0, lv=Math.floor(xp/200)+1;
     var learned=Object.keys(srs).length;   // 碰過(有 SRS 記錄)= 已學過
     if(!learned&&!uP&&!wa&&!wc&&!xp) return null;
-    return {pct:Math.round(learned/cfg.total*100),pctLabel:'已學過',streak:st.streak||0,
-      metrics:[{k:'已學過',v:learned+'/'+cfg.total},{k:'精熟',v:mastered},{k:'單元過關',v:uP},{k:'綜合過關',v:cP},{k:'待清錯題',v:wa},{k:'等級',v:'Lv '+lv}]};
+    var total=totalOf(cfg);
+    return {pct:total?Math.round(learned/total*100):null,pctLabel:'已學過',streak:st.streak||0,
+      metrics:[{k:'已學過',v:learned+'/'+total},{k:'精熟',v:mastered},{k:'單元過關',v:uP},{k:'綜合過關',v:cP},{k:'待清錯題',v:wa},{k:'等級',v:'Lv '+lv}]};
   }
   if(cfg.type==='pinju'){
     var PR=J('pinju2'),ST=J('pinjuStat'),MI=J('pinjuMist');
@@ -88,8 +91,9 @@ function extract(cfg){
     if(!passed&&!(ST&&ST.answered)) return null;
     var s3=Object.keys(PR||{}).filter(function(k){return PR[k]&&PR[k].stars===3}).length;
     var wa=Object.keys(MI||{}).filter(function(k){return MI[k]&&MI[k].box<6}).length;
-    return {pct:Math.round(passed/cfg.total*100),pctLabel:'關卡完成',streak:(ST&&ST.streak)||0,
-      metrics:[{k:'過關',v:passed+'/'+cfg.total},{k:'三星',v:s3},{k:'待清錯題',v:wa}]};
+    var total=totalOf(cfg);
+    return {pct:total?Math.round(passed/total*100):null,pctLabel:'關卡完成',streak:(ST&&ST.streak)||0,
+      metrics:[{k:'過關',v:passed+'/'+total},{k:'三星',v:s3},{k:'待清錯題',v:wa}]};
   }
   if(cfg.type==='review'){
     var U=J(cfg.pfx+'_units'),W=J(cfg.pfx+'_wrong');
@@ -122,7 +126,7 @@ function extract(cfg){
     if(!mastered&&!log.length&&!wn) return null;
     var pct, plabel, lead;
     var m=[];
-    if(cfg.total){ var learned=Object.keys(srs).length; pct=Math.round(learned/cfg.total*100); plabel='已學過'; m=[{k:'已學過',v:learned+'/'+cfg.total},{k:'精熟',v:mastered},{k:'待清錯題',v:wn},{k:'作答',v:log.length}]; }
+    if(cfg.total){ var learned=Object.keys(srs).length, total=totalOf(cfg); pct=total?Math.round(learned/total*100):null; plabel='已學過'; m=[{k:'已學過',v:learned+'/'+total},{k:'精熟',v:mastered},{k:'待清錯題',v:wn},{k:'作答',v:log.length}]; }
     else{ var ok=log.filter(function(x){return x&&x.correct}).length; pct=log.length?Math.round(ok/log.length*100):null; plabel='作答正確率'; m=[{k:'作答',v:log.length},{k:'精熟',v:mastered},{k:'待清錯題',v:wn}]; }
     if(cfg.overcome) m.push({k:'已征服',v:d.overcome||0});
     return {pct:pct,pctLabel:plabel,streak:logStreak(log),metrics:m};
