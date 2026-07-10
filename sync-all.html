@@ -77,9 +77,10 @@ function extract(cfg){
     var wa=Object.keys(wrong).filter(function(k){return wrong[k]&&!wrong[k].graduated}).length;
     var wc=Object.keys(wrong).filter(function(k){return wrong[k]&&wrong[k].graduated}).length;
     var xp=st.xp||0, lv=Math.floor(xp/200)+1;
-    if(!mastered&&!uP&&!wa&&!wc&&!xp) return null;
-    return {pct:Math.round(mastered/cfg.total*100),pctLabel:'精熟',streak:st.streak||0,
-      metrics:[{k:'精熟字',v:mastered+'/'+cfg.total},{k:'單元過關',v:uP},{k:'綜合過關',v:cP},{k:'待清錯題',v:wa},{k:'已征服',v:wc},{k:'等級',v:'Lv '+lv}]};
+    var learned=Object.keys(srs).length;   // 碰過(有 SRS 記錄)= 已學過
+    if(!learned&&!uP&&!wa&&!wc&&!xp) return null;
+    return {pct:Math.round(learned/cfg.total*100),pctLabel:'已學過',streak:st.streak||0,
+      metrics:[{k:'已學過',v:learned+'/'+cfg.total},{k:'精熟',v:mastered},{k:'單元過關',v:uP},{k:'綜合過關',v:cP},{k:'待清錯題',v:wa},{k:'等級',v:'Lv '+lv}]};
   }
   if(cfg.type==='pinju'){
     var PR=J('pinju2'),ST=J('pinjuStat'),MI=J('pinjuMist');
