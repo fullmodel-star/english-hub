@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>一鍵導入所有進度 · 家長後台</title>
+<style>
+:root{--bg:#f4f6f9;--card:#fff;--text:#1f2733;--muted:#66727f;--line:#e6eaf0;--accent:#4f46e5;--green:#2eb872;--amber:#e8a33d;--red:#e8504f}
+*{box-sizing:border-box}
+body{margin:0;font-family:-apple-system,"Segoe UI","Microsoft JhengHei",sans-serif;background:var(--bg);color:var(--text);padding:18px;max-width:560px;margin:0 auto}
+h1{font-size:20px;margin:0 0 4px}
+.sub{color:var(--muted);font-size:13px;margin-bottom:14px;line-height:1.6}
+.who{background:var(--card);border-radius:14px;padding:12px 14px;margin-bottom:12px;box-shadow:0 4px 16px rgba(40,50,70,.06);font-size:15px}
+.who b{color:var(--accent)}
+.btn{border:none;background:var(--accent);color:#fff;font-weight:800;padding:13px 18px;border-radius:12px;cursor:pointer;font-size:16px;width:100%;box-shadow:0 6px 16px rgba(79,70,229,.3)}
+.btn:disabled{opacity:.5}
+.btn.sec{background:var(--card);color:var(--text);border:1px solid var(--line);box-shadow:none;font-size:14px;padding:10px}
+ul{list-style:none;padding:0;margin:14px 0}
+li{background:var(--card);border-radius:10px;padding:10px 12px;margin-bottom:6px;display:flex;align-items:center;gap:10px;font-size:14px;box-shadow:0 2px 8px rgba(40,50,70,.04)}
+.ico{width:20px;text-align:center}
+.st{margin-left:auto;font-size:12px;color:var(--muted)}
+.st.ok{color:var(--green);font-weight:700}
+.st.skip{color:var(--muted)}
+.st.err{color:var(--red)}
+.done{background:var(--card);border-radius:14px;padding:16px;text-align:center;margin-top:14px;box-shadow:0 4px 16px rgba(40,50,70,.06)}
+.done .big{font-size:40px}
+a.link{color:var(--accent);font-weight:700;text-decoration:none}
+.warn{background:#fff6e6;border:1px solid #f0d9a8;color:#8a6316;border-radius:12px;padding:12px 14px;font-size:13px;margin-bottom:12px}
+@media(prefers-color-scheme:dark){:root{--bg:#12151b;--card:#1b1f27;--text:#e8ecf2;--muted:#93a0b0;--line:#2a2f3a}.warn{background:#2a2410;border-color:#4a3f1a;color:#e8c877}}
+</style>
+</head>
+<body>
+<h1>☁️ 一鍵導入所有進度</h1>
+<div class="sub">把這台裝置上<b>所有英語 App 目前的進度</b>一次全部上傳到家長後台，不用一支一支打開。</div>
+
+<div id="app"></div>
+
+<script>
+var WORKER_FALLBACK='https://eng-progress.fullmodel.workers.dev';
+var APPS=[
+ {slug:'english1200',label:'國小1200單字',id:'vocab1200',type:'vocab',key:'engpomo_v1_1200',total:1200},
+ {slug:'english2000',label:'國中2000單字',id:'vocab2000',type:'vocab',key:'engpomo_v1_2000',total:2000},
+ {slug:'english6000',label:'高中6000單字',id:'vocab6000',type:'vocab',key:'engpomo_v1_6000',total:6005},
+ {slug:'toeic-vocab',label:'多益單字',id:'toeic',type:'vocab',key:'engpomo_v1_toeic',total:874},
+ {slug:'toefl-vocab',label:'托福單字',id:'toefl',type:'vocab',key:'engpomo_v1_toefl',total:894},
+ {slug:'gsat-core',label:'學測必考單字',id:'gsatcore',type:'vocab',key:'engpomo_gc_v1_2000',total:2570},
+ {slug:'englishS',label:'英語拼句',id:'pinju',type:'pinju',total:63},
+ {slug:'cap-english',label:'會考複習',id:'cap-english',type:'review',pfx:'cap'},
+ {slug:'gsat-english',label:'學測複習',id:'gsat-english',type:'review',pfx:'gsat'},
+ {slug:'junior_english',label:'國中英文題庫',id:'junior-qbank',type:'gkq'},
+ {slug:'cap-qbank',label:'會考英語題庫',id:'cap-qbank',type:'qbank',key:'cap_qb_v1'},
+ {slug:'gsat-qbank',label:'學測英語題庫',id:'gsat-qbank',type:'qbank',key:'gsat_qb_v1'},
+ {slug:'hs-grammar',label:'高中英語文法',id:'hs-grammar',type:'profile',ns:'enghs'},
+ {slug:'english-phrases',label:'英語片語',id:'phrases',type:'profile',ns:'engph',overcome:true},
+ {slug:'junior1b',label:'國一下複習',id:'junior1b',type:'junior1b'}
+];
+
+function J(k){ try{ var v=localStorage.getItem(k); return v?JSON.parse(v):null; }catch(e){ return null; } }
+function ninjaXp(){ var n=J('ninja_xp_v1'); return (n&&n.xp)||0; }
+function logStreak(log){
+  if(!log||!log.length) return 0;
+  var days={};
+  log.forEach(function(x){ if(x&&x.ts){ var d=new Date(x.ts); days[d.getFullYear()+'-'+d.getMonth()+'-'+d.getDate()]=1; } });
+  var sk=0, cur=new Date();
+  for(var i=0;i<400;i++){ var kk=cur.getFullYear()+'-'+cur.getMonth()+'-'+cur.getDate(); if(days[kk]){ sk++; cur.setDate(cur.getDate()-1); } else break; }
+  return sk;
+}
+
+// 各 App 的擷取器：只讀 localStorage → {pct,pctLabel,streak,metrics} 或 null(沒做過就略過)
+function extract(cfg){
+  if(cfg.type==='vocab'){
+    var S=J(cfg.key); if(!S) return null;
+    var srs=S.srs||{},units=S.units||{},combos=S.combos||{},wrong=S.wrong||{},st=S.stats||{};
+    var mastered=Object.keys(srs).filter(function(k){return srs[k]&&srs[k].box>=5}).length;
+    var uP=Object.keys(units).filter(function(k){return units[k]&&units[k].passed}).length;
+    var cP=Object.keys(combos).filter(function(k){return combos[k]&&combos[k].passed}).length;
+    var wa=Object.keys(wrong).filter(function(k){return wrong[k]&&!wrong[k].graduated}).length;
+    var wc=Object.keys(wrong).filter(function(k){return wrong[k]&&wrong[k].graduated}).length;
+    var xp=st.xp||0, lv=Math.floor(xp/200)+1;
+    if(!mastered&&!uP&&!wa&&!wc&&!xp) return null;
+    return {pct:Math.round(mastered/cfg.total*100),pctLabel:'精熟',streak:st.streak||0,
+      metrics:[{k:'精熟字',v:mastered+'/'+cfg.total},{k:'單元過關',v:uP},{k:'綜合過關',v:cP},{k:'待清錯題',v:wa},{k:'已征服',v:wc},{k:'等級',v:'Lv '+lv}]};
+  }
+  if(cfg.type==='pinju'){
+    var PR=J('pinju2'),ST=J('pinjuStat'),MI=J('pinjuMist');
+    var passed=Object.keys(PR||{}).length;
+    if(!passed&&!(ST&&ST.answered)) return null;
+    var s3=Object.keys(PR||{}).filter(function(k){return PR[k]&&PR[k].stars===3}).length;
+    var wa=Object.keys(MI||{}).filter(function(k){return MI[k]&&MI[k].box<6}).length;
+    return {pct:Math.round(passed/cfg.total*100),pctLabel:'關卡完成',streak:(ST&&ST.streak)||0,
+      metrics:[{k:'過關',v:passed+'/'+cfg.total},{k:'三星',v:s3},{k:'待清錯題',v:wa}]};
+  }
+  if(cfg.type==='review'){
+    var U=J(cfg.pfx+'_units'),W=J(cfg.pfx+'_wrong');
+    var done=Object.keys(U||{}).length, wn=Object.keys(W||{}).length;
+    if(!done&&!wn) return null;
+    var sc=0,tt=0; Object.keys(U||{}).forEach(function(k){sc+=(U[k]&&U[k].score)||0; tt+=(U[k]&&U[k].total)||0;});
+    return {pct:tt?Math.round(sc/tt*100):null,pctLabel:'練習正確率',streak:null,
+      metrics:[{k:'完成單元',v:done},{k:'待清錯題',v:wn}]};
+  }
+  if(cfg.type==='gkq'){
+    var S=J('gkq_v2'); if(!S) return null;
+    var done=Object.keys(S.done||{}).length, stat=S.stat||{};
+    if(!done&&!stat.ans) return null;
+    return {pct:stat.ans?Math.round((stat.ok||0)/stat.ans*100):null,pctLabel:'總正確率',streak:S.streak||0,
+      metrics:[{k:'答對題數',v:done},{k:'累積作答',v:stat.ans||0},{k:'待清錯題',v:Object.keys(S.wrong||{}).length}]};
+  }
+  if(cfg.type==='qbank'){
+    var S=J(cfg.key); if(!S) return null;
+    var rec=S.rec||{}, ansd=Object.keys(rec).length;
+    if(!ansd) return null;
+    var ok=Object.keys(rec).filter(function(k){return rec[k]&&rec[k].correct}).length;
+    return {pct:Math.round(ok/ansd*100),pctLabel:'答對率',streak:null,
+      metrics:[{k:'作答',v:ansd},{k:'答對',v:ok},{k:'待清錯題',v:(S.wrong||[]).length},{k:'經驗',v:ninjaXp()}]};
+  }
+  if(cfg.type==='profile'){
+    var id=localStorage.getItem(cfg.ns+'.current')||'';
+    var d=J(cfg.ns+'.prog.'+id); if(!d) return null;
+    var srs=d.srs||{},log=d.log||[],wn=(d.wrong||[]).length;
+    var mastered=Object.keys(srs).filter(function(k){return srs[k]&&srs[k].interval>=3}).length;
+    if(!mastered&&!log.length&&!wn) return null;
+    var ok=log.filter(function(x){return x&&x.correct}).length;
+    var m=[{k:'精熟',v:mastered},{k:'待清錯題',v:wn},{k:'作答',v:log.length}];
+    if(cfg.overcome) m.push({k:'已征服',v:d.overcome||0});
+    return {pct:log.length?Math.round(ok/log.length*100):null,pctLabel:'作答正確率',streak:logStreak(log),metrics:m};
+  }
+  if(cfg.type==='junior1b'){
+    var S=J('kh1b_v2'); if(!S) return null;
+    var srs=S.srs||{},wrong=S.wrong||{},stat=S.stat||{};
+    if(!stat.ans&&!Object.keys(srs).length) return null;
+    var mastered=Object.keys(srs).filter(function(k){return srs[k]&&srs[k].box>=5}).length;
+    var wa=Object.keys(wrong).filter(function(k){return wrong[k]&&!wrong[k].graduated}).length;
+    var wc=Object.keys(wrong).filter(function(k){return wrong[k]&&wrong[k].graduated}).length;
+    return {pct:stat.ans?Math.round((stat.ok||0)/stat.ans*100):null,pctLabel:'總正確率',streak:S.streak||0,
+      metrics:[{k:'精熟',v:mastered},{k:'累積作答',v:stat.ans||0},{k:'待清錯題',v:wa},{k:'已征服',v:wc}]};
+  }
+  return null;
+}
+
+// ---- 設定 / 流程 ----
+function cfg(){ return {url:localStorage.getItem('eng_sync_url')||'', key:localStorage.getItem('eng_sync_key')||'', child:localStorage.getItem('eng_child')||''}; }
+(function parseHash(){
+  var m=(location.hash||'').match(/sync=(.+)$/);
+  if(m){
+    var p=m[1].split('~').map(function(s){try{return decodeURIComponent(s)}catch(e){return s}});
+    if(p[0]) localStorage.setItem('eng_sync_url',p[0].replace(/\/+$/,''));
+    if(p[1]) localStorage.setItem('eng_sync_key',p[1]);
+    if(p[2]) localStorage.setItem('eng_child',p[2]);
+    try{history.replaceState(null,'',location.pathname)}catch(e){}
+  }
+})();
+
+var app=document.getElementById('app');
+function render(){
+  var c=cfg();
+  if(!c.child || !c.url){
+    app.innerHTML='<div class="warn">這台裝置還沒設定成某個小孩。請改用家長後台產生的「設定連結」打開，或請家長協助。</div>';
+    return;
+  }
+  app.innerHTML=
+    '<div class="who">這台是 <b>'+esc(c.child)+'</b> 的裝置</div>'+
+    '<button class="btn" id="go">🚀 一次上傳所有進度</button>'+
+    '<ul id="list"></ul>'+
+    '<div id="done"></div>';
+  document.getElementById('go').onclick=run;
+}
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+
+function run(){
+  var c=cfg();
+  var btn=document.getElementById('go'); btn.disabled=true; btn.textContent='上傳中…';
+  var list=document.getElementById('list'); list.innerHTML='';
+  var rows={};
+  APPS.forEach(function(a){
+    var li=document.createElement('li');
+    li.innerHTML='<span class="ico">⬜</span><span>'+esc(a.label)+'</span><span class="st" id="st_'+a.id+'">…</span>';
+    list.appendChild(li); rows[a.id]=li;
+  });
+  var uploaded=0, skipped=0, failed=0, pending=0;
+  function finish(){
+    if(pending>0) return;
+    var d=document.getElementById('done');
+    d.innerHTML='<div class="done"><div class="big">'+(failed?'⚠️':'🎉')+'</div>'+
+      '<div style="font-weight:800;font-size:17px;margin:6px 0">已上傳 '+uploaded+' 科'+(skipped?'，略過 '+skipped+' 科(還沒做過)':'')+(failed?'，'+failed+' 科失敗':'')+'</div>'+
+      '<div style="color:var(--muted);font-size:13px">打開 <a class="link" href="'+esc(c.url)+'" target="_blank">家長後台</a> 就能看到（約 5 秒後出現）。</div>'+
+      '<button class="btn sec" style="margin-top:12px" onclick="run()">再上傳一次</button></div>';
+    var b=document.getElementById('go'); b.disabled=false; b.textContent='🚀 一次上傳所有進度';
+  }
+  APPS.forEach(function(a){
+    var st=document.getElementById('st_'+a.id);
+    var data;
+    try{ data=extract(a); }catch(e){ data=null; }
+    if(!data){ rows[a.id].querySelector('.ico').textContent='◽'; st.className='st skip'; st.textContent='沒做過'; skipped++; return; }
+    pending++;
+    var body=JSON.stringify({child:c.child,app:a.id,label:a.label,key:c.key,ts:Date.now(),
+      pct:(data.pct==null?null:data.pct),pctLabel:data.pctLabel||'進度',streak:(data.streak==null?null:data.streak),metrics:data.metrics||[]});
+    fetch(c.url+'/report',{method:'POST',headers:{'Content-Type':'text/plain'},body:body})
+      .then(function(r){ if(!r.ok) throw 0; rows[a.id].querySelector('.ico').textContent='✅'; st.className='st ok'; st.textContent='已上傳'; uploaded++; })
+      .catch(function(){ rows[a.id].querySelector('.ico').textContent='❌'; st.className='st err'; st.textContent='失敗'; failed++; })
+      .then(function(){ pending--; finish(); });
+  });
+  finish();
+}
+render();
+</script>
+</body>
+</html>
