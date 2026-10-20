@@ -1,0 +1,128 @@
+/* 活潑層 engine：hubhome（900 家庭版上鎖入口＋跨 App 儀表板）
+   來源：packages/lively/engines/hubhome.css → 900 的 lively-engine.css
+   ⚠️ 900 是上鎖 App：活潑層標記要放在「明文」（_source/index.plain.html）裡，跟著密文一起進 srcdoc iframe；
+      密碼閘外殼（root index.html）不放活潑層（鎖畫面是深色、header 是 display:contents，core 的頁首山丘會畫到畫面底部）。
+   原本：ridgeline-ui.css 鋼藍深色頁首（theme-steel）＋紙背；「從這裡開始」大鈕用品牌層的破曉金。
+   現在：作業簿版——米白方格紙＋淡主色頁首＋白卡厚邊；會按的東西一律線條圖示，進度格／儀表板標題保留 Fluent 彩色插圖。
+   與 922 的 hub.css 同一套作法（變數接到色票），多了 900 自己的頁籤、開始卡、進度卡、密碼說明、搜尋無結果。
+   選擇器前綴 html:not([data-lv-off])：權重要壓過 ridgeline-ui 的 :root 與 body.theme-steel。 */
+
+/* ---------- 把 App 原本的變數接到色票 ---------- */
+html:not([data-lv-off]),html:not([data-lv-off]) body{
+  --bg:var(--lv-paper); --surface:var(--lv-card); --card:var(--lv-card); --card2:var(--lv-paper);
+  --ink:var(--lv-text); --sub:color-mix(in srgb,var(--lv-text) 80%,var(--lv-muted)); --muted:var(--lv-muted);
+  --line:var(--lv-line); --accent:var(--lv-acc); --tint:var(--lv-soft);
+}
+html,body{background-color:var(--lv-paper)}
+body{color:var(--lv-text)}
+
+/* 數字用圓體 */
+.dstat b,#count{font-family:"LvNum",-apple-system,"Segoe UI",system-ui,"PingFang TC","Microsoft JhengHei",sans-serif}
+
+/* ---------- 頁首（core 已改淡主色底＋山丘） ---------- */
+/* core 把 .rl-appbar 設成 position:relative（為了山丘），900 的頁首原本是黏頂，下面的頁籤列也跟著它的高度黏 → 改回黏頂 */
+html body header.rl-appbar{position:sticky;top:0;z-index:20}
+.rl-appbar .rl-mark{background:color-mix(in srgb,var(--lv-card) 70%,transparent)}
+.rl-appbar .rl-sub{color:var(--lv-muted)}
+/* 頁首山形：原本深色頁首用白色版；淺色頁首換同資料夾的官方岩藍版（不重新上色、只換官方檔）；深色模式 core 會換回白色版 */
+@media (prefers-color-scheme:light){html:not([data-theme="dark"]) .rl-appbar img.rl-glyph{content:url(rl-mark-everest-navy.png)}}
+html[data-theme="light"] .rl-appbar img.rl-glyph{content:url(rl-mark-everest-navy.png)}
+/* ❓ 說明鈕收在頁首裡（UIUX1013 HELPDOCK）：core 的家族按鈕外觀已套，線條圖示大小 */
+.rl-appbar .fabsafe-bar .engwc-help .lv-line{width:20px;height:20px}
+
+/* ---------- 頁籤列 ---------- */
+.hubnav{background:var(--lv-card);border-bottom:0;box-shadow:0 1.5px 0 var(--lv-line)}
+.hubnav button{color:var(--lv-muted)}
+.hubnav button[aria-current="page"]{color:var(--lv-text);border-bottom-color:var(--lv-btn)}
+
+/* ---------- 開始卡＋進度卡 ---------- */
+.hubtop>section{background:var(--lv-card);border:0;border-radius:22px;box-shadow:0 0 0 1.5px var(--lv-line),0 4px 0 var(--lv-line)}
+.hubtop h2{color:var(--lv-text);font-weight:800}
+/* 「從這裡開始」：原本是品牌層的破曉金（品牌規範：品牌層的金不拿去做按鈕）→ 各支按鈕色＋厚度 */
+.heroGo{background:var(--lv-btn);color:var(--lv-ink);border-radius:18px;box-shadow:0 5px 0 var(--lv-btn-d);transition:transform .08s,box-shadow .08s}
+.heroGo:active{transform:translateY(4px);box-shadow:0 1px 0 var(--lv-btn-d)}
+.heroGo .hgt .lv-line-inline{margin:0 .35em 0 0;width:1.05em;height:1.05em;stroke-width:2.4}
+.linkbtn{color:var(--lv-acc)}
+.pshint{color:var(--lv-muted)}
+
+/* ---------- 標籤、介紹、安裝 ---------- */
+.tags span{color:var(--lv-acc);background:var(--lv-soft);box-shadow:inset 0 0 0 1px var(--lv-soft2)}
+.intro{color:var(--sub)}
+#installBar .ib{background:var(--lv-btn);color:var(--lv-ink);border-radius:16px;box-shadow:0 4px 0 var(--lv-btn-d);transition:transform .08s,box-shadow .08s}
+#installBar .ib:not(.sec){background:var(--lv-btn)}
+#installBar .ib:active{transform:translateY(3px);box-shadow:0 1px 0 var(--lv-btn-d)}
+#installBar .ib.sec{background:var(--lv-card);color:var(--lv-acc);border:0;box-shadow:0 0 0 1.5px var(--lv-soft2),0 4px 0 var(--lv-soft2)}
+#installBar .tip{background:var(--lv-card);border-color:var(--lv-line);color:var(--sub)}
+#installBar .tip .x{color:var(--lv-acc)}
+
+/* ---------- 搜尋、密碼說明 ---------- */
+.search{background:var(--lv-card);border:0;border-radius:16px;box-shadow:0 0 0 1.5px var(--lv-line)}
+.search:focus-within{box-shadow:0 0 0 2px var(--lv-btn)}
+.search > .lv-line-inline{margin:0;color:var(--lv-muted);width:20px;height:20px}
+.search input{color:var(--lv-text)}
+.search input::placeholder{color:var(--lv-muted)}
+.hubtip{background:var(--lv-card);border:0;border-radius:16px;box-shadow:0 0 0 1.5px var(--lv-line);color:var(--sub)}
+.hubtip>summary{color:var(--lv-text)}
+.hubtip>summary .lv-line-inline,.hubmore>summary .lv-line-inline{color:var(--lv-acc)}
+
+/* ---------- 分類標題：前面一顆淺主色小圓點 ---------- */
+h2.grp{color:var(--lv-text);display:flex;align-items:center;gap:8px}
+h2.grp::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--lv-btn);flex:none}
+
+/* ---------- App 卡片：白卡＋底部厚邊，.ic 是品牌層原樣保留 ---------- */
+.card{background:var(--lv-card);border:0;border-radius:20px;box-shadow:0 0 0 1.5px var(--lv-line),0 4px 0 var(--lv-line);transition:transform .12s,box-shadow .12s}
+.card:active{transform:translateY(3px);box-shadow:0 0 0 1.5px var(--lv-line),0 1px 0 var(--lv-line)}
+@media(hover:hover){.card:hover{border:0;box-shadow:0 0 0 2px var(--lv-btn),0 4px 0 var(--lv-btn-d);transform:translateY(-2px)}}
+.card .nm{color:var(--lv-text)}
+.card .ds{color:var(--lv-muted)}
+.card .go,.dapp .dgo{color:var(--lv-acc);display:inline-flex;align-items:center}
+.card .go{background:var(--lv-soft);border-radius:999px;padding:4px 12px}
+.card .go .lv-line-inline,.dapp .dgo .lv-line-inline{margin:0 0 0 .2em;width:1em;height:1em;stroke-width:2.4}
+.card.soon .go{color:var(--lv-muted);background:transparent}
+.card.soon .nm{color:var(--lv-muted)}
+.badge-soon{background:var(--lv-sun-soft);color:var(--lv-sun)}
+.empty,.src{color:var(--lv-muted)}
+.src{border-top-color:var(--lv-line)}
+.src b{color:var(--sub)}
+/* 搜尋無結果：建議關鍵字＋清除（清除鈕原本破曉金 → 按鈕色） */
+.empty .sugBtn{background:var(--lv-card);color:var(--lv-acc);border:0;box-shadow:0 0 0 1.5px var(--lv-soft2),0 3px 0 var(--lv-soft2);font-weight:700}
+.empty .clearBtn{background:var(--lv-btn);color:var(--lv-ink);border-radius:16px;box-shadow:0 4px 0 var(--lv-btn-d)}
+
+/* ---------- 學習儀表板（收合區） ---------- */
+.hubmore{background:var(--lv-card);border:0;border-radius:22px;box-shadow:0 0 0 1.5px var(--lv-line),0 4px 0 var(--lv-line)}
+.hubmore>summary{color:var(--lv-text)}
+.hubmore>summary::after{color:var(--lv-acc)}
+.hubmore>.dash{border-top:1.5px solid var(--lv-line)}
+.dash{background:var(--lv-card);border:0;border-radius:22px;box-shadow:0 0 0 1.5px var(--lv-line),0 4px 14px rgba(60,50,30,.06)}
+.hubmore>.dash{box-shadow:none}
+.dash h3{color:var(--lv-text)}
+.dstat{background:var(--lv-soft);border:0;border-radius:16px;box-shadow:inset 0 0 0 1.5px var(--lv-soft2)}
+.dstat b{color:var(--lv-text);font-weight:900}
+.dstat span{color:var(--lv-muted);display:inline-flex;align-items:center;gap:2px}
+.hubtop .dstats .dstat span{color:var(--lv-muted)}
+.dstat span .lv-ico-inline{margin-right:.15em}
+/* 行內寫死的橘字（待複習數）→ 家族暖陽色（原橘在米白上對比不足） */
+.dash [style*="#d9822b"]{color:var(--lv-sun)!important}
+.dapp{background:var(--lv-paper);border:0;border-radius:14px;box-shadow:0 0 0 1.5px var(--lv-line)}
+.dapp .dnm{color:var(--lv-text)}
+.dapp .dmeta{color:var(--lv-muted)}
+.dwords summary{color:var(--lv-muted)}
+.wchip{background:var(--lv-paper);border-color:var(--lv-line);color:var(--lv-text)}
+.dash .demp{color:var(--lv-muted)}
+
+/* ---------- 備份還原 ---------- */
+html .bk,html .hubmore .bk{background:var(--lv-card)!important;color:var(--lv-text)}
+html .bk h3{color:var(--lv-text)}
+html .bk .bkhint{color:var(--lv-muted)}
+html .bk button,html .hubmore .bk button:not(.pri){background:var(--lv-card);color:var(--lv-text);border:0;border-radius:14px;box-shadow:0 0 0 1.5px var(--lv-line),0 3px 0 var(--lv-line);display:inline-flex;align-items:center;justify-content:center}
+html .bk button.pri{background:var(--lv-btn);color:var(--lv-ink);box-shadow:0 3px 0 var(--lv-btn-d)}
+html .bk button .lv-line-inline{margin:0 .3em 0 0}
+html .bk button:active{transform:translateY(2px)}
+html .bk .ok{color:var(--lv-ok)}
+html .bk .bad{color:var(--lv-no)}
+
+/* ---------- 品牌層：深色時頁尾山形換同資料夾的白色版（同 901／922 作法，不改內容） ---------- */
+@media (prefers-color-scheme:dark){
+  html:not([data-theme]) .rl-appbar img.rl-glyph,html:not([data-theme]) .rl-signature img.rl-sig-glyph{content:url(rl-mark-everest-white.png)}
+}
+html[data-theme="dark"] .rl-appbar img.rl-glyph,html[data-theme="dark"] .rl-signature img.rl-sig-glyph{content:url(rl-mark-everest-white.png)}

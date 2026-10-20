@@ -1,0 +1,14 @@
+/* 由 packages/lively/sync_lively.py 產生，請勿手改（改 apps.json 再重跑）。
+   900_english-hub｜主題色相來源 #4E6E88｜engine=hubhome｜level=full */
+:root{--lv-engine:hubhome;--lv-level:full}
+html:not([data-theme="dark"]),html:not([data-theme="dark"]) body{
+  --lv-btn:#85AFD1;--lv-btn-d:#598CB5;--lv-ink:#1C3B54;--lv-acc:#3A6D98;
+  --lv-soft:#E8F0F7;--lv-soft2:#CEDDE8;
+}
+html[data-theme="dark"],html[data-theme="dark"] body{
+  --lv-btn:#85AFD1;--lv-btn-d:#598CB5;--lv-ink:#1C3B54;--lv-acc:#76A5CB;
+  --lv-soft:#253441;--lv-soft2:#374F62;
+}
+@media (prefers-color-scheme:dark){html:not([data-theme]),html:not([data-theme]) body{
+  --lv-acc:#76A5CB;--lv-soft:#253441;--lv-soft2:#374F62;
+}}
